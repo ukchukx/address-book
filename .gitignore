@@ -1,0 +1,13 @@
+/node_modules
+/public/mix-manifest.json
+/public/css
+/public/hot
+/public/js
+/public/storage
+/storage/*.key
+/vendor
+/.idea
+/.vscode
+npm-debug.log
+.env*
+.directory
