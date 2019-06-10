@@ -10,6 +10,6 @@ class HomeController extends Controller {
   }
 
   public function contacts() {
-    return view('contacts', ['contacts' => []]);
+    return view('contacts', ['contacts' => \Auth::user()->contacts()->get()]);
   }
 }

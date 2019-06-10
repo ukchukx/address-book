@@ -1,11 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-  <div class="row justify-content-center">
-    <div class="col-sm-12">
-      <!--  -->
-    </div>
-  </div>
+<div class="container-fluid">
+  <contact-view :contacts="{{ $contacts }}" />
 </div>
 @endsection
