@@ -1,5 +1,6 @@
 <template>
-  <div class="card">
+  <div v-if="isMobile && !contact"></div>
+  <div v-else class="card">
     <div class="card-body">
       <h3 class="text-muted text-center" v-if="!contact">No contact selected</h3>
       <div v-else>
@@ -21,9 +22,11 @@
 import ContactForm from './ContactForm';
 import Notes from './Notes';
 import Addresses from './Addresses';
+import MobileDetect from './mixins/MobileDetect';
 
 export default {
   name: 'Contact',
+  mixins: [MobileDetect],
   components: {
     ContactForm,
     Notes,
