@@ -43,4 +43,18 @@ abstract class TestCase extends BaseTestCase {
         'text' => $this->faker->text
       ];
     }
+
+    protected function getAddressAttributes(Contact $contact, $key) {
+      if (empty($this->faker)) $this->faker = Faker::create();
+
+      if ($key == 'email') $value = $this->faker->safeEmail;
+      if ($key == 'phone') $value = $this->faker->e164PhoneNumber;
+      if ($key == 'physical') $value = $this->faker->sentence;
+
+      return [
+        'contact_id' => $contact->id,
+        'value' => $value,
+        'key' => $key
+      ];
+    }
 }

@@ -18,4 +18,8 @@ class Contact extends Model {
   public function notes() {
     return $this->hasMany(Note::class);
   }
+
+  public function addresses() {
+    return $this->hasMany(Address::class);
+  }
 }
