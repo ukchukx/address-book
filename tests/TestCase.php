@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Faker\Factory as Faker;
 use Illuminate\Support\Str;
 use App\Models\User;
+use App\Models\Contact;
 
 abstract class TestCase extends BaseTestCase {
     use CreatesApplication;
@@ -30,6 +31,16 @@ abstract class TestCase extends BaseTestCase {
         'user_id' => $user->id,
         'name' => $this->faker->name,
         'gender' => rand() % 2 == 0 ? 'male' : 'female'
+      ];
+    }
+
+    protected function getNoteAttributes(Contact $contact) {
+      if (empty($this->faker)) $this->faker = Faker::create();
+
+      return [
+        'contact_id' => $contact->id,
+        'title' => $this->faker->sentence,
+        'text' => $this->faker->text
       ];
     }
 }

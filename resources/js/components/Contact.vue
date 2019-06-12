@@ -9,6 +9,7 @@
           :initial-data="form"
           @form-submitted="submit" />
         <hr>
+        <notes :contact-id="contact.id" />
       </div>
     </div>
   </div>
@@ -16,11 +17,13 @@
 
 <script>
 import ContactForm from './ContactForm';
+import Notes from './Notes';
 
 export default {
   name: 'Contact',
   components: {
-    ContactForm
+    ContactForm,
+    Notes
   },
   props: {
     contact: {
