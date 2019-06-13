@@ -54,6 +54,8 @@ export default {
     },
     handleContactDeleted(id) {
       this.localContacts = this.localContacts.filter(c => c.id !== id);
+
+      if (id === (this.selectedContact || { }).id) this.selectedContact = null;
     },
     handleContactUpdated(contact) {
       this.localContacts = this.localContacts.map(c => c.id === contact.id ? contact : c);
