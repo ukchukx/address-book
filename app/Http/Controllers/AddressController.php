@@ -45,7 +45,7 @@ class AddressController extends Controller {
     $user = Auth::guard('api')->user();
     $address = Address::find($id);
 
-    if ($address->contact()->userId == $user->id) {
+    if ($address->contact()->user_id == $user->id) {
       $address = UpdateAddress::from(array_merge(['address_id' => $id], $request->only(['key', 'value'])))->execute();
 
       return response([
@@ -62,7 +62,7 @@ class AddressController extends Controller {
     $user = Auth::guard('api')->user();
     $address = Address::find($id);
 
-    if ($address->contact()->userId == $user->id) {
+    if ($address->contact()->user_id == $user->id) {
       DeleteAddress::from(['id' => $address->id])->execute();
 
       return response(null, Response::HTTP_NO_CONTENT);

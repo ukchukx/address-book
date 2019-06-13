@@ -45,7 +45,7 @@ class NoteController extends Controller {
     $user = Auth::guard('api')->user();
     $note = Note::find($id);
 
-    if ($note->contact()->userId == $user->id) {
+    if ($note->contact()->user_id == $user->id) {
       $note = UpdateNote::from(array_merge(['note_id' => $id], $request->only(['title', 'text'])))->execute();
 
       return response([
@@ -62,7 +62,7 @@ class NoteController extends Controller {
     $user = Auth::guard('api')->user();
     $note = Note::find($id);
 
-    if ($note->contact()->userId == $user->id) {
+    if ($note->contact()->user_id == $user->id) {
       DeleteNote::from(['id' => $note->id])->execute();
 
       return response(null, Response::HTTP_NO_CONTENT);
