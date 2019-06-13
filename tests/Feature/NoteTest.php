@@ -9,6 +9,7 @@ use App\Domain\Note\Commands\UpdateNote;
 use App\Domain\Note\Commands\DeleteNote;
 use App\Domain\Contact\Commands\CreateContact;
 use App\Models\User;
+use App\Models\Contact;
 use App\Models\Note;
 
 class NoteTest extends TestCase {
@@ -36,7 +37,7 @@ class NoteTest extends TestCase {
     $contact = CreateContact::from($this->getContactAttributes($user))->execute();
     $note = CreateNote::from($this->getNoteAttributes($contact))->execute();
 
-    $this->assertEquals(1, count($contact->notes()->get()));
+    $this->assertEquals(1, count(Contact::find($contact->id)->notes()));
 
     $command = DeleteNote::from(['id' => $note->id]);
 
@@ -44,7 +45,7 @@ class NoteTest extends TestCase {
 
     $command->execute();
 
-    $this->assertEquals(0, count($contact->notes()->get()));
+    $this->assertEquals(0, count(Contact::find($contact->id)->notes()));
   }
 
   public function testNoteTitleUpdate() {
@@ -93,6 +94,7 @@ class NoteTest extends TestCase {
 
     $updatedNote = $command->execute();
 
-    $this->assertEquals($updatedNote->updated_at, $note->updated_at);
+    $this->assertEquals($updatedNote->title, $note->title);
+    $this->assertEquals($updatedNote->text, $note->text);
   }
 }

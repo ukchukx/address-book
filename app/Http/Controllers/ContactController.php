@@ -28,12 +28,12 @@ class ContactController extends Controller {
     return response([
       'success' => true,
       'message' => 'Created',
-      'data' => $contact->jsonSerialize()
+      'data' => $contact
     ], Response::HTTP_CREATED);
   }
 
   public function update(Request $request, $id) {
-    $contact = Auth::guard('api')->user()->contacts()->where('id', $id)->first();
+    $contact = Auth::guard('api')->user()->findContact($id);
 
     if ($contact) {
       $contact = UpdateContact::from(array_merge($request->all(), ['contact_id' => $id]))->execute();
@@ -49,7 +49,7 @@ class ContactController extends Controller {
   }
 
   public function destroy($id) {
-    $contact = Auth::guard('api')->user()->contacts()->where('id', $id)->first();
+    $contact = Auth::guard('api')->user()->findContact($id);
 
     if ($contact) {
       DeleteContact::from(['id' => $contact->id])->execute();

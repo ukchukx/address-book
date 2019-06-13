@@ -2,16 +2,74 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Redis;
 
-class Address extends Model {
-  use Traits\UsesUuid;
+class Address {
+  /** @var string */
+  public $id;
+  /** @var string */
+  public $contact_id;
+  /** @var string */
+  public $key;
+  /** @var string */
+  public $value;
 
-  protected $guarded = [];
+  public function __construct(string $id, string $contactId, string $key, string $value) {
+    $this->id = $id;
+    $this->contact_id = $contactId;
+    $this->key = $key;
+    $this->value = $value;
+  }
 
-  public $incrementing = false;
+  public function contact() : ?Contact {
+    return Contact::find($this->contact_id);
+  }
 
-  public function contact() {
-    return $this->belongsTo(Contact::class);
+  public static function find(string $id) : ?Address {
+    // First, get the containing contact
+    $contact = Contact::find(Redis::get(static::key($id)));
+    $addresses = empty($contact) ? [] : $contact->addresses;
+
+    // Find and return the address with the supplied id
+    return array_reduce(
+      $addresses,
+      function ($currAddress, $a) use($id) { return $a->id === $id ? $a : $currAddress; },
+      null
+    );
+  }
+
+  public static function store(Address $address) {
+    $contact = Contact::find($address->contact_id);
+
+    if ($contact) {
+      // First, get other addresses...
+      $addresses = array_filter($contact->addresses, function ($n) use($address) { return $n->id !== $address->id; });
+      // ...then, add this address.
+      $contact->addresses = array_merge($addresses, [$address]);
+
+      Contact::store($contact);
+      // Since addresses are nested in contacts we store a pointer to the containing contact.
+      return Redis::set(static::key($address->id), $address->contact_id);
+    }
+
+    return false;
+  }
+
+  public static function remove(string $id) {
+    // First, get the containing contact
+    $contact = Contact::find(Redis::get(static::key($id)));
+
+    if ($contact) {
+      // Remove this address from the array
+      $contact->addresses = array_filter($contact->addresses, function ($a) use($id) { return $a->id !== $id; });
+
+      return Contact::store($contact);
+    }
+
+    return false;
+  }
+
+  private static function key(string $id) : string {
+    return "address:$id";
   }
 }

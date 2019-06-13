@@ -12,13 +12,13 @@ use App\Domain\Note\Commands\DeleteNote;
 
 class NoteController extends Controller {
   public function index($id) {
-    $contact = Auth::guard('api')->user()->contacts()->where('id', $id)->first();
+    $contact = Auth::guard('api')->user()->findContact($id);
 
     if (! $contact) return response(null, Response::HTTP_FORBIDDEN);
 
     return response([
       'success' => true,
-      'data' => $contact->notes()->get()->jsonSerialize()
+      'data' => $contact->notes()
     ], Response::HTTP_OK);
   }
 
@@ -37,15 +37,15 @@ class NoteController extends Controller {
     return response([
       'success' => true,
       'message' => 'Created',
-      'data' => $note->jsonSerialize()
+      'data' => $note
     ], Response::HTTP_CREATED);
   }
 
   public function update(Request $request, $id) {
     $user = Auth::guard('api')->user();
-    $note = Note::findOrFail($id);
+    $note = Note::find($id);
 
-    if ($note->contact->user->id == $user->id) {
+    if ($note->contact()->userId == $user->id) {
       $note = UpdateNote::from(array_merge(['note_id' => $id], $request->only(['title', 'text'])))->execute();
 
       return response([
@@ -60,9 +60,9 @@ class NoteController extends Controller {
 
   public function destroy($id) {
     $user = Auth::guard('api')->user();
-    $note = Note::findOrFail($id);
+    $note = Note::find($id);
 
-    if ($note->contact->user->id == $user->id) {
+    if ($note->contact()->userId == $user->id) {
       DeleteNote::from(['id' => $note->id])->execute();
 
       return response(null, Response::HTTP_NO_CONTENT);

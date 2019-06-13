@@ -2,7 +2,6 @@
 
 namespace App\Domain\Contact\Projectors;
 
-use Ramsey\Uuid\Uuid;
 use Spatie\EventProjector\Projectors\Projector;
 use Spatie\EventProjector\Projectors\ProjectsEvents;
 use App\Domain\Contact\Events\ContactCreated;
@@ -15,27 +14,22 @@ class ContactProjector implements Projector {
   use ProjectsEvents;
 
   public function onContactCreated(ContactCreated $event, string $aggregateUuid) {
-    Contact::create([
-      'id' => $aggregateUuid,
-      'gender' => $event->gender,
-      'name' => $event->name,
-      'user_id' => $event->userId
-    ]);
+    Contact::store(new Contact($aggregateUuid, $event->userId, $event->name, $event->gender, [], []));
   }
 
   public function onContactDeleted(ContactDeleted $event, string $aggregateUuid) {
-    Contact::where('id', $aggregateUuid)->delete();
+    Contact::remove($aggregateUuid);
   }
 
   public function onContactNameChanged(ContactNameChanged $event, string $aggregateUuid) {
-    Contact::where('id', $aggregateUuid)->update([
-      'name' => $event->name
-    ]);
+    $contact = Contact::find($aggregateUuid);
+    $contact->name = $event->name;
+    Contact::store($contact);
   }
 
   public function onContactGenderChanged(ContactGenderChanged $event, string $aggregateUuid) {
-    Contact::where('id', $aggregateUuid)->update([
-      'gender' => $event->gender
-    ]);
+    $contact = Contact::find($aggregateUuid);
+    $contact->gender = $event->gender;
+    Contact::store($contact);
   }
 }

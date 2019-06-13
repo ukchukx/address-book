@@ -2,7 +2,6 @@
 
 namespace App\Domain\Note\Projectors;
 
-use Ramsey\Uuid\Uuid;
 use Spatie\EventProjector\Projectors\Projector;
 use Spatie\EventProjector\Projectors\ProjectsEvents;
 use App\Domain\Note\Events\NoteCreated;
@@ -15,23 +14,22 @@ class NoteProjector implements Projector {
   use ProjectsEvents;
 
   public function onNoteCreated(NoteCreated $event, string $aggregateUuid) {
-    Note::create([
-      'id' => $aggregateUuid,
-      'contact_id' => $event->contactId,
-      'text' => $event->text,
-      'title' => $event->title
-    ]);
+    Note::store(new Note($aggregateUuid, $event->contactId, $event->title, $event->text));
   }
 
   public function onNoteDeleted(NoteDeleted $event, string $aggregateUuid) {
-    Note::where('id', $aggregateUuid)->delete();
+    Note::remove($aggregateUuid);
   }
 
   public function onNoteTextChanged(NoteTextChanged $event, string $aggregateUuid) {
-    Note::where('id', $aggregateUuid)->update(['text' => $event->text]);
+    $note = Note::find($aggregateUuid);
+    $note->text = $event->text;
+    Note::store($note);
   }
 
   public function onNoteTitleChanged(NoteTitleChanged $event, string $aggregateUuid) {
-    Note::where('id', $aggregateUuid)->update(['title' => $event->title]);
+    $note = Note::find($aggregateUuid);
+    $note->title = $event->title;
+    Note::store($note);
   }
 }

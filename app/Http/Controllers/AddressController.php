@@ -12,13 +12,13 @@ use App\Domain\Address\Commands\DeleteAddress;
 
 class AddressController extends Controller {
   public function index($id) {
-    $contact = Auth::guard('api')->user()->contacts()->where('id', $id)->first();
+    $contact = Auth::guard('api')->user()->findContact($id);
 
     if (! $contact) return response(null, Response::HTTP_FORBIDDEN);
 
     return response([
       'success' => true,
-      'data' => $contact->addresses()->get()->jsonSerialize()
+      'data' => $contact->addresses()
     ], Response::HTTP_OK);
   }
 
@@ -37,15 +37,15 @@ class AddressController extends Controller {
     return response([
       'success' => true,
       'message' => 'Created',
-      'data' => $address->jsonSerialize()
+      'data' => $address
     ], Response::HTTP_CREATED);
   }
 
   public function update(Request $request, $id) {
     $user = Auth::guard('api')->user();
-    $address = Address::findOrFail($id);
+    $address = Address::find($id);
 
-    if ($address->contact->user->id == $user->id) {
+    if ($address->contact()->userId == $user->id) {
       $address = UpdateAddress::from(array_merge(['address_id' => $id], $request->only(['key', 'value'])))->execute();
 
       return response([
@@ -60,9 +60,9 @@ class AddressController extends Controller {
 
   public function destroy($id) {
     $user = Auth::guard('api')->user();
-    $address = Address::findOrFail($id);
+    $address = Address::find($id);
 
-    if ($address->contact->user->id == $user->id) {
+    if ($address->contact()->userId == $user->id) {
       DeleteAddress::from(['id' => $address->id])->execute();
 
       return response(null, Response::HTTP_NO_CONTENT);

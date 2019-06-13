@@ -7,11 +7,16 @@ use Faker\Factory as Faker;
 use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Contact;
+use Illuminate\Support\Facades\Redis;
 
 abstract class TestCase extends BaseTestCase {
     use CreatesApplication;
 
     private $faker;
+
+    protected function tearDown(): void {
+      Redis::flushdb();
+    }
 
     protected function getUserAttributes() {
       if (empty($this->faker)) $this->faker = Faker::create();

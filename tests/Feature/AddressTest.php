@@ -9,6 +9,7 @@ use App\Domain\Address\Commands\UpdateAddress;
 use App\Domain\Address\Commands\DeleteAddress;
 use App\Domain\Contact\Commands\CreateContact;
 use App\Models\User;
+use App\Models\Contact;
 use App\Models\Address;
 
 class AddressTest extends TestCase {
@@ -70,7 +71,7 @@ class AddressTest extends TestCase {
     $contact = CreateContact::from($this->getContactAttributes($user))->execute();
     $address = CreateAddress::from($this->getAddressAttributes($contact, 'email'))->execute();
 
-    $this->assertEquals(1, count($contact->addresses()->get()));
+    $this->assertEquals(1, count(Contact::find($contact->id)->addresses()));
 
     $command = DeleteAddress::from(['id' => $address->id]);
 
@@ -78,7 +79,7 @@ class AddressTest extends TestCase {
 
     $command->execute();
 
-    $this->assertEquals(0, count($contact->addresses()->get()));
+    $this->assertEquals(0, count(Contact::find($contact->id)->addresses()));
   }
 
   public function testAddressUpdate() {

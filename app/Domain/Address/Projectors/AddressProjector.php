@@ -2,7 +2,6 @@
 
 namespace App\Domain\Address\Projectors;
 
-use Ramsey\Uuid\Uuid;
 use Spatie\EventProjector\Projectors\Projector;
 use Spatie\EventProjector\Projectors\ProjectsEvents;
 use App\Domain\Address\Events\AddressCreated;
@@ -15,23 +14,22 @@ class AddressProjector implements Projector {
   use ProjectsEvents;
 
   public function onAddressCreated(AddressCreated $event, string $aggregateUuid) {
-    Address::create([
-      'id' => $aggregateUuid,
-      'contact_id' => $event->contactId,
-      'key' => $event->key,
-      'value' => $event->value
-    ]);
+    Address::store(new Address($aggregateUuid, $event->contactId, $event->key, $event->value));
   }
 
   public function onAddressDeleted(AddressDeleted $event, string $aggregateUuid) {
-    Address::where('id', $aggregateUuid)->delete();
+    Address::remove($aggregateUuid);
   }
 
   public function onAddressKeyChanged(AddressKeyChanged $event, string $aggregateUuid) {
-    Address::where('id', $aggregateUuid)->update(['key' => $event->key]);
+    $address = Address::find($aggregateUuid);
+    $address->key = $event->key;
+    Address::store($address);
   }
 
   public function onAddressValueChanged(AddressValueChanged $event, string $aggregateUuid) {
-    Address::where('id', $aggregateUuid)->update(['value' => $event->value]);
+    $address = Address::find($aggregateUuid);
+    $address->value = $event->value;
+    Address::store($address);
   }
 }
