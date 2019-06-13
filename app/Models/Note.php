@@ -57,20 +57,24 @@ class Note {
   }
 
   public static function remove(string $id) {
+    $key = static::key($id);
     // First, get the containing contact
-    $contact = Contact::find(Redis::get(static::key($id)));
+    $contact = Contact::find(Redis::get($key));
 
     if ($contact) {
       // Remove this note from the array
       $contact->notes = array_filter($contact->notes, function ($n) use($id) { return $n->id !== $id; });
 
-      return Contact::store($contact);
+      Contact::store($contact);
+
+      // Remove pointer
+      return Redis::del($key);
     }
 
     return false;
   }
 
-  private static function key(string $id) : string {
+  public static function key(string $id) : string {
     return "note:$id";
   }
 }

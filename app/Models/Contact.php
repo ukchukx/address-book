@@ -62,6 +62,11 @@ class Contact {
 
       User::removeContact($contact->user_id, $key);
 
+      // Remove note pointers
+      foreach($contact->notes as $note) Redis::del(Note::key($note->id));
+      // Remove address pointers
+      foreach($contact->addresses as $address) Redis::del(Address::key($address->id));
+
       return Redis::del($key);
     }
 
