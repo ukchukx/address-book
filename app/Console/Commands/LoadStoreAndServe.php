@@ -5,20 +5,20 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Spatie\EventProjector\Projectionist;
 
-class InitStoreAndServe extends Command {
+class LoadStoreAndServe extends Command {
   /**
    * The name and signature of the console command.
    *
    * @var string
    */
-  protected $signature = 'init:serve';
+  protected $signature = 'load:serve';
 
   /**
    * The console command description.
    *
    * @var string
    */
-  protected $description = 'Replay events, then start the server';
+  protected $description = 'Load read store, then start the server';
 
   /** @var \Spatie\EventProjector\Projectionist */
   protected $projectionist;
