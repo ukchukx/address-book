@@ -1,0 +1,14 @@
+version: '2'
+services:
+  redis:
+    image: redis:5.0.5-alpine
+    ports:
+      - "6378:6379"
+
+  address-book:
+    image: address-book
+    container_name: address-book
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - "${PWD}/logs:/app/storage/logs"

@@ -1,0 +1,92 @@
+version: v1.0
+name: Address book pipeline
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+
+blocks:
+  - name: Check master
+    task:
+      jobs:
+        - name: check master
+          commands:
+            - if [ "$SEMAPHORE_GIT_BRANCH" != "master" ]; then false; fi
+            - echo 'Master branch received'
+
+  - name: Install dependencies
+    task:
+      prologue:
+        commands:
+          - checkout
+      jobs:
+        - name: composer
+          commands:
+            - sem-version php 7.3.0
+            - cache restore vendor-$SEMAPHORE_GIT_BRANCH-$(checksum composer.lock),vendor-$SEMAPHORE_GIT_BRANCH
+            - composer install --optimize-autoloader
+            - cache store vendor-$SEMAPHORE_GIT_BRANCH-$(checksum composer.lock) vendor
+            - cache store node_modules-$SEMAPHORE_GIT_BRANCH-$(checksum package-lock.json) node_modules
+
+        - name: npm
+          commands:
+            - cache restore node_modules-$SEMAPHORE_GIT_BRANCH-$(checksum package-lock.json) node_modules
+            - npm install --no-audit
+            - cache store node_modules-$SEMAPHORE_GIT_BRANCH-$(checksum package-lock.json) node_modules
+
+  - name: Test
+    task:
+      env_vars:
+        - name: DB_PASSWORD
+          value: ''
+        - name: REDIS_HOST
+          value: '0.0.0.0'
+      secrets:
+        - name: address-book-secrets
+      prologue:
+        commands:
+          - checkout
+          - cp ../.env.testing .
+          - cache restore vendor-$SEMAPHORE_GIT_BRANCH-$(checksum composer.lock)
+          - sudo apt-get install -y -qq mysql-client
+          - sem-service start mysql 5.7
+          - mysql --host=0.0.0.0 -uroot -e "create database address_book_test"
+          - sem-version php 7.3.0
+          - sem-service start redis
+          - phpbrew ext install igbinary
+          - phpbrew ext install redis -- --enable-redis-igbinary
+      jobs:
+        - name: phpunit
+          commands:
+            - ./vendor/bin/phpunit
+
+  - name: Build Docker image
+    task:
+      secrets:
+        - name: address-book-secrets
+      prologue:
+        commands:
+          - checkout
+          - cp ../.env.production .env
+          - cache restore vendor-$SEMAPHORE_GIT_BRANCH-$(checksum composer.lock)
+          - cache restore node_modules-$SEMAPHORE_GIT_BRANCH-$(checksum package-lock.json)
+          - sem-version php 7.3.0
+          - composer install --optimize-autoloader --no-dev
+          - npm i --no-audit
+      jobs:
+        - name: build image
+          commands:
+            - npm run production
+            - ./build.sh
+            - docker save -o image.tar.gz address-book
+            - cache store image-$SEMAPHORE_WORKFLOW_ID image.tar.gz
+            - cache store dockercompose-$SEMAPHORE_WORKFLOW_ID docker-compose.yml
+            - cache store run-$SEMAPHORE_WORKFLOW_ID run.sh
+
+promotions:
+  - name: Deploy to production
+    pipeline_file: production-deploy.yml
+    auto_promote_on:
+      - result: passed
+        branch:
+          - master

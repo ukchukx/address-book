@@ -35,7 +35,7 @@ class Init extends Command {
     $this->call('route:cache');
 
     $this->line('<info>Run migrations...</info>');
-    $this->call('migrate', ['--force']);
+    $this->call('migrate', ['--force' => true]);
 
     $this->line('<info>Install passport keys...</info>');
     $this->call('passport:install');

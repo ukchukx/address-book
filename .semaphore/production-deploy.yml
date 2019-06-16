@@ -1,0 +1,32 @@
+version: v1.0
+name: Deploy to production
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+blocks:
+  - name: Transfer
+    task:
+      secrets:
+        - name: ssh-key
+      jobs:
+        - name: transfer
+          commands:
+            - cache restore image-$SEMAPHORE_WORKFLOW_ID
+            - cache restore dockercompose-$SEMAPHORE_WORKFLOW_ID
+            - cache restore run-$SEMAPHORE_WORKFLOW_ID
+            - echo 'Transferring app to production...'
+            - chmod 0600 ~/ssh-key/id_rsa*
+            - scp -i ~/ssh-key/id_rsa -o StrictHostKeyChecking=no image.tar.gz docker-compose.yml run.sh ubuntu@109.237.25.250:~/apps/address-book/
+
+  - name: Deploy
+    task:
+      secrets:
+        - name: ssh-key
+      jobs:
+        - name: deploy
+          commands:
+            - echo 'Deploying app on server...'
+            - chmod 0600 ~/ssh-key/id_rsa*
+            - ssh -i ~/ssh-key/id_rsa -o StrictHostKeyChecking=no ubuntu@109.237.25.250 'cd ~/apps/address-book;docker load -i image.tar.gz;./run.sh'
+
