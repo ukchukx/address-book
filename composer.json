@@ -13,6 +13,7 @@
         "laravel/framework": "5.8.*",
         "laravel/passport": "^7.3",
         "laravel/tinker": "^1.0",
+        "longman/laravel-lodash": "^1.0",
         "spatie/laravel-event-projector": "^2.0.0"
     },
     "require-dev": {
