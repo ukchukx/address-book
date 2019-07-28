@@ -15,9 +15,10 @@ blocks:
             - cache restore image-$SEMAPHORE_WORKFLOW_ID
             - cache restore dockercompose-$SEMAPHORE_WORKFLOW_ID
             - cache restore run-$SEMAPHORE_WORKFLOW_ID
+            - cache restore stop-$SEMAPHORE_WORKFLOW_ID
             - echo 'Transferring app to production...'
             - chmod 0600 ~/ssh-key/id_rsa*
-            - scp -i ~/ssh-key/id_rsa -o StrictHostKeyChecking=no image.tar.gz docker-compose.yml run.sh ubuntu@109.237.25.250:~/apps/address-book/
+            - scp -i ~/ssh-key/id_rsa -o StrictHostKeyChecking=no image.tar.gz docker-compose.yml {run,stop}.sh ubuntu@109.237.25.250:~/apps/address-book/
 
   - name: Deploy
     task:

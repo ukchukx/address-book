@@ -82,6 +82,7 @@ blocks:
             - cache store image-$SEMAPHORE_WORKFLOW_ID image.tar.gz
             - cache store dockercompose-$SEMAPHORE_WORKFLOW_ID docker-compose.yml
             - cache store run-$SEMAPHORE_WORKFLOW_ID run.sh
+            - cache store stop-$SEMAPHORE_WORKFLOW_ID stop.sh
 
 promotions:
   - name: Deploy to production
