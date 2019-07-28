@@ -48,13 +48,18 @@ class AddressController extends Controller {
 
     $address = $command->execute();
 
-    Log::info('Address created', ['params' => $requestData, 'user' => $user->email, 'address' => $address->id]);
+    if ($address) {
+      Log::info('Address created', ['params' => $requestData, 'user' => $user->email, 'address' => $address->id]);
 
-    return response([
-      'success' => true,
-      'message' => 'Created',
-      'data' => $address
-    ], Response::HTTP_CREATED);
+      return response([
+        'success' => true,
+        'message' => 'Created',
+        'data' => $address
+      ], Response::HTTP_CREATED);
+    }
+
+
+    return response(['success' => false, 'message' => 'Internal Server Error'], Response::HTTP_INTERNAL_SERVER_ERROR);
   }
 
   public function update(Request $request, $id) {

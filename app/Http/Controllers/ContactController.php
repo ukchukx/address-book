@@ -31,13 +31,18 @@ class ContactController extends Controller {
 
     $contact = $command->execute();
 
-    Log::info('Contact created', ['params' => $data, 'user' => $user->email, 'contact' => $contact->id]);
+    if ($contact) {
+      Log::info('Contact created', ['params' => $data, 'user' => $user->email, 'contact' => $contact->id]);
 
-    return response([
-      'success' => true,
-      'message' => 'Created',
-      'data' => $contact
-    ], Response::HTTP_CREATED);
+      return response([
+        'success' => true,
+        'message' => 'Created',
+        'data' => $contact
+      ], Response::HTTP_CREATED);
+    }
+
+
+    return response(['success' => false, 'message' => 'Internal Server Error'], Response::HTTP_INTERNAL_SERVER_ERROR);
   }
 
   public function update(Request $request, $id) {

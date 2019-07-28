@@ -48,13 +48,17 @@ class NoteController extends Controller {
 
     $note = $command->execute();
 
-    Log::info('Note created', ['params' => $requestData, 'user' => $user->email, 'note' => $note->id]);
+    if ($note) {
+      Log::info('Note created', ['params' => $requestData, 'user' => $user->email, 'note' => $note->id]);
 
-    return response([
-      'success' => true,
-      'message' => 'Created',
-      'data' => $note
-    ], Response::HTTP_CREATED);
+      return response([
+        'success' => true,
+        'message' => 'Created',
+        'data' => $note
+      ], Response::HTTP_CREATED);
+    }
+
+    return response(['success' => false, 'message' => 'Internal Server Error'], Response::HTTP_INTERNAL_SERVER_ERROR);
   }
 
   public function update(Request $request, $id) {
