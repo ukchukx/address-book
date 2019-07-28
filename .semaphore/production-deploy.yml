@@ -29,5 +29,5 @@ blocks:
           commands:
             - echo 'Deploying app on server...'
             - chmod 0600 ~/ssh-key/id_rsa*
-            - ssh -i ~/ssh-key/id_rsa -o StrictHostKeyChecking=no ubuntu@109.237.25.250 'cd ~/apps/address-book;docker load -i image.tar.gz;./run.sh'
+            - ssh -i ~/ssh-key/id_rsa -o StrictHostKeyChecking=no ubuntu@109.237.25.250 'cd ~/apps/address-book;docker load -i image.tar.gz;rm image.tar.gz;./run.sh'
 
