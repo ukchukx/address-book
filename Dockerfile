@@ -21,8 +21,6 @@ RUN cd /tmp/ && git clone https://github.com/igbinary/igbinary "php-igbinary" &&
 WORKDIR /app
 COPY . /app
 
-ENV REDIS_PORT=6378
-
 RUN mkdir bootstrap/cache; chmod 777 -R bootstrap/cache; php artisan cache:clear
 
 CMD php artisan init
