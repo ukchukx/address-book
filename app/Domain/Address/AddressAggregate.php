@@ -2,6 +2,7 @@
 
 namespace App\Domain\Address;
 
+use Log;
 use Spatie\EventProjector\AggregateRoot;
 use App\Domain\Address\Events\AddressCreated;
 use App\Domain\Address\Events\AddressDeleted;
@@ -19,6 +20,11 @@ final class AddressAggregate extends AggregateRoot {
   public $contactId;
 
   public function createAddress(string $contactId, string $key, string $value) {
+    Log::info('Command received', [
+      'command' => 'createAddress',
+      'params' => ['contactId' => $contactId, 'key' => $key, 'value' => $value]
+    ]);
+
     $this->recordThat(new AddressCreated($contactId, $key, $value));
 
     $this->persist();
@@ -26,6 +32,11 @@ final class AddressAggregate extends AggregateRoot {
 
   public function updateAddress(string $addressId, string $key, string $value) {
     $updated = false;
+
+    Log::info('Command received', [
+      'command' => 'updateAddress',
+      'params' => ['addressId' => $addressId, 'key' => $key, 'value' => $value]
+    ]);
 
     if (! empty($key) && $key != $this->key) {
       $this->recordThat(new AddressKeyChanged($addressId, $key));
@@ -43,12 +54,16 @@ final class AddressAggregate extends AggregateRoot {
   }
 
   public function deleteAddress(string $id) {
+    Log::info('Command received', ['command' => 'deleteAddress', 'params' => ['id' => $id]]);
+
     $this->recordThat(new AddressDeleted($id));
 
     $this->persist();
   }
 
   public function applyAddressCreated(AddressCreated $event) {
+    Log::info('Applying event', ['event' => 'AddressCreated', 'event' => $event]);
+
     $this->key = $event->key;
     $this->value = $event->value;
     $this->contactId = $event->contactId;
@@ -57,12 +72,16 @@ final class AddressAggregate extends AggregateRoot {
   }
 
   public function applyAddressValueChanged(AddressValueChanged $event) {
+    Log::info('Applying event', ['event' => 'AddressValueChanged', 'event' => $event]);
+
     $this->value = $event->value;
 
     $this->persist();
   }
 
   public function applyAddressKeyChanged(AddressKeyChanged $event) {
+    Log::info('Applying event', ['event' => 'AddressKeyChanged', 'event' => $event]);
+
     $this->key = $event->key;
 
     $this->persist();
