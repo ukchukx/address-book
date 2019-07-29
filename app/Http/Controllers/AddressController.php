@@ -15,11 +15,12 @@ class AddressController extends Controller {
   public function index($id) {
     $user = Auth::guard('api')->user();
     $contact = $user->findContact($id);
+    $logParams = ['user' => $user->email, 'contact' => $id];
 
-    Log::info('Fetch contact addresses', ['user' => $user->email, 'contact' => $id]);
+    Log::info('Fetch contact addresses', $logParams);
 
     if (! $contact) {
-      Log::info('Cannot find contact', ['user' => $user->email, 'contact' => $id]);
+      Log::info('Cannot find contact', $logParams);
 
       return response(null, Response::HTTP_FORBIDDEN);
     }
@@ -34,11 +35,10 @@ class AddressController extends Controller {
     $user = Auth::guard('api')->user();
     $requestData = $request->all();
     $command = CreateAddress::from($requestData);
-
-    Log::info('Create address', ['params' => $requestData, 'user' => $user->email]);
+    $logParams = ['user' => $user->email, 'params' => $requestData];
 
     if (! $command->isValid()) {
-      Log::info('Create address command is invalid', ['params' => $requestData, 'user' => $user->email]);
+      Log::info('Create address command is invalid', $logParams);
 
       return response([
         'success' => false,
@@ -49,15 +49,16 @@ class AddressController extends Controller {
     $address = $command->execute();
 
     if ($address) {
-      Log::info('Address created', ['params' => $requestData, 'user' => $user->email, 'address' => $address->id]);
+      Log::info('Address created', array_merge($logParams, ['address' => $address->id]));
 
       return response([
         'success' => true,
         'message' => 'Created',
         'data' => $address
       ], Response::HTTP_CREATED);
+    } else {
+      Log::info('Could not create address', $logParams);
     }
-
 
     return response(['success' => false, 'message' => 'Internal Server Error'], Response::HTTP_INTERNAL_SERVER_ERROR);
   }
@@ -66,13 +67,12 @@ class AddressController extends Controller {
     $user = Auth::guard('api')->user();
     $address = Address::find($id);
     $data = array_merge(['address_id' => $id], $request->only(['key', 'value']));
-
-    Log::info('Update address', ['user' => $user->email, 'params' => $data]);
+    $logParams = ['user' => $user->email, 'params' => $data];
 
     if ($address->contact->user_id == $user->id) {
       $address = UpdateAddress::from($data)->execute();
 
-      Log::info($address ? 'Address updated' : 'Could not update address', ['user' => $user->email, 'params' => $data]);
+      Log::info($address ? 'Address updated' : 'Could not update address', $logParams);
 
       return response([
         'success' => (bool) $address,
@@ -81,7 +81,7 @@ class AddressController extends Controller {
       ], ((bool) $address) ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST);
     }
 
-    Log::info('Cannot update address', ['user' => $user->email, 'params' => $data]);
+    Log::info('Cannot update address', $logParams);
 
     return response(null, Response::HTTP_FORBIDDEN);
   }
@@ -89,20 +89,23 @@ class AddressController extends Controller {
   public function destroy($id) {
     $user = Auth::guard('api')->user();
     $address = Address::find($id);
+    $logParams = ['user' => $user->email, 'address' => $id];
 
-    if (! $address) return response(null, Response::HTTP_NOT_FOUND);
+    if (! $address) {
+      Log::info('Address not found', $logParams);
 
-    Log::info('Delete address', ['user' => $user->email, 'address' => $id]);
+      return response(null, Response::HTTP_NOT_FOUND);
+    }
 
     if ($address->contact->user_id == $user->id) {
       DeleteAddress::from(['id' => $address->id])->execute();
 
-      Log::info('Address deleted', ['user' => $user->email, 'address' => $id]);
+      Log::info('Address deleted', $logParams);
 
       return response(null, Response::HTTP_NO_CONTENT);
     }
 
-    Log::info('Cannot delete address', ['user' => $user->email, 'address' => $id]);
+    Log::info('Cannot delete address', $logParams);
 
     return response(null, Response::HTTP_FORBIDDEN);
   }

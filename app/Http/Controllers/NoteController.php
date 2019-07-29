@@ -34,11 +34,10 @@ class NoteController extends Controller {
     $user = Auth::guard('api')->user();
     $requestData = $request->all();
     $command = CreateNote::from($requestData);
-
-    Log::info('Create note', ['params' => $requestData, 'user' => $user->email]);
+    $logParams = ['params' => $requestData, 'user' => $user->email];
 
     if (! $command->isValid()) {
-      Log::info('Create note command is invalid', ['params' => $requestData, 'user' => $user->email]);
+      Log::info('Create note command is invalid', $logParams);
 
       return response([
         'success' => false,
@@ -49,13 +48,15 @@ class NoteController extends Controller {
     $note = $command->execute();
 
     if ($note) {
-      Log::info('Note created', ['params' => $requestData, 'user' => $user->email, 'note' => $note->id]);
+      Log::info('Note created', array_merge($logParams, ['note' => $note->id]));
 
       return response([
         'success' => true,
         'message' => 'Created',
         'data' => $note
       ], Response::HTTP_CREATED);
+    } else {
+      Log::info('Could not create note', $logParams);
     }
 
     return response(['success' => false, 'message' => 'Internal Server Error'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -65,13 +66,12 @@ class NoteController extends Controller {
     $user = Auth::guard('api')->user();
     $note = Note::find($id);
     $data = array_merge(['note_id' => $id], $request->only(['title', 'text']));
-
-    Log::info('Update note', ['user' => $user->email, 'params' => $data]);
+    $logParams = ['user' => $user->email, 'params' => $data];
 
     if ($note->contact->user_id == $user->id) {
       $note = UpdateNote::from($data)->execute();
 
-      Log::info($note ? 'Note updated' : 'Could not update note', ['user' => $user->email, 'params' => $data]);
+      Log::info($note ? 'Note updated' : 'Could not update note', $logParams);
 
       return response([
         'success' => (bool) $note,
@@ -80,7 +80,7 @@ class NoteController extends Controller {
       ], ((bool) $note) ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST);
     }
 
-    Log::info('Cannot update note', ['user' => $user->email, 'params' => $data]);
+    Log::info('Cannot update note', $logParams);
 
     return response(null, Response::HTTP_FORBIDDEN);
   }
@@ -88,20 +88,23 @@ class NoteController extends Controller {
   public function destroy($id) {
     $user = Auth::guard('api')->user();
     $note = Note::find($id);
+    $logParams = ['user' => $user->email, 'note' => $id];
 
-    if (! $note) return response(null, Response::HTTP_NOT_FOUND);
+    if (! $note) {
+      Log::info('Note not found', $logParams);
 
-    Log::info('Delete note', ['user' => $user->email, 'note' => $id]);
+      return response(null, Response::HTTP_NOT_FOUND);
+    }
 
     if ($note->contact->user_id == $user->id) {
       DeleteNote::from(['id' => $note->id])->execute();
 
-      Log::info('Note deleted', ['user' => $user->email, 'note' => $id]);
+      Log::info('Note deleted', $logParams);
 
       return response(null, Response::HTTP_NO_CONTENT);
     }
 
-    Log::info('Cannot delete note', ['user' => $user->email, 'note' => $id]);
+    Log::info('Cannot delete note', $logParams);
 
     return response(null, Response::HTTP_FORBIDDEN);
   }

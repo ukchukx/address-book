@@ -17,11 +17,10 @@ class ContactController extends Controller {
     $data = $request->all();
     $data['user_id'] = $user->id;
     $command = CreateContact::from($data);
-
-    Log::info('Create contact', ['user' => $user->email, 'params' => $data]);
+    $logParams = ['user' => $user->email, 'params' => $data];
 
     if (! $command->isValid()) {
-      Log::info('Command to create contact is invalid', ['user' => $user->email, 'params' => $data]);
+      Log::info('Command to create contact is invalid', $logParams);
 
       return response([
         'success' => false,
@@ -32,15 +31,16 @@ class ContactController extends Controller {
     $contact = $command->execute();
 
     if ($contact) {
-      Log::info('Contact created', ['params' => $data, 'user' => $user->email, 'contact' => $contact->id]);
+      Log::info('Contact created', array_merge($logParams, ['contact' => $contact->id]));
 
       return response([
         'success' => true,
         'message' => 'Created',
         'data' => $contact
       ], Response::HTTP_CREATED);
+    } else {
+      Log::info('Could not create contact', $logParams);
     }
-
 
     return response(['success' => false, 'message' => 'Internal Server Error'], Response::HTTP_INTERNAL_SERVER_ERROR);
   }
@@ -49,14 +49,12 @@ class ContactController extends Controller {
     $user = Auth::guard('api')->user();
     $contact = $user->findContact($id);
     $data = array_merge($request->all(), ['contact_id' => $id]);
-
-    Log::info('Update contact', ['user' => $user->email, 'params' => $data]);
+    $logParams = ['user' => $user->email, 'params' => $data];
 
     if ($contact) {
       $contact = UpdateContact::from($data)->execute();
 
-      Log::info($contact ? 'Contact updated' : 'Could not update contact',
-        ['user' => $user->email, 'params' => $data]);
+      Log::info($contact ? 'Contact updated' : 'Could not update contact', $logParams);
 
       return response([
         'success' => (bool) $contact,
@@ -65,7 +63,7 @@ class ContactController extends Controller {
       ], ((bool) $contact) ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST);
     }
 
-    Log::info('Cannot update contact', ['user' => $user->email, 'params' => $data]);
+    Log::info('Cannot update contact', $logParams);
 
     return response(null, Response::HTTP_FORBIDDEN);
   }
@@ -73,20 +71,23 @@ class ContactController extends Controller {
   public function destroy($id) {
     $user = Auth::guard('api')->user();
     $contact = $user->findContact($id);
+    $logParams = ['user' => $user->email, 'contact' => $id];
 
-    if (! $contact) return response(null, Response::HTTP_NOT_FOUND);
+    if (! $contact) {
+      Log::info('Contact not found', $logParams);
 
-    Log::info('Delete contact', ['user' => $user->email, 'contact' => $id]);
+      return response(null, Response::HTTP_NOT_FOUND);
+    }
 
     if ($contact) {
       DeleteContact::from(['id' => $contact->id])->execute();
 
-      Log::info('Contact deleted', ['user' => $user->email, 'contact' => $id]);
+      Log::info('Contact deleted', $logParams);
 
       return response(null, Response::HTTP_NO_CONTENT);
     }
 
-    Log::info('Cannot delete contact', ['user' => $user->email, 'contact' => $id]);
+    Log::info('Cannot delete contact', $logParams);
 
     return response(null, Response::HTTP_FORBIDDEN);
   }
