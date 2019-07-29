@@ -15,64 +15,37 @@ class AddressProjector implements Projector {
   use ProjectsEvents;
 
   public function onAddressCreated(AddressCreated $event, string $aggregateUuid) {
-    $params = [
+    Log::info('Project event', ['id' => $aggregateUuid, 'event' => $event]);
+
+    Address::create([
       'id' => $aggregateUuid,
       'contact_id' => $event->contactId,
       'key' => $event->key,
       'value' => $event->value
-    ];
-    $logParams = ['params' => $params, 'event' => 'onAddressCreated'];
-
-    if (Address::create($params)) {
-      Log::info('Created address', $logParams);
-    } else {
-      Log::info('Failed to create address', $logParams);
-    }
+    ]);
   }
 
   public function onAddressDeleted(AddressDeleted $event, string $aggregateUuid) {
-    $logParams = ['id' => $aggregateUuid, 'event' => 'onAddressDeleted'];
+    Log::info('Project event', ['id' => $aggregateUuid, 'event' => $event]);
 
-    if (Address::where('id', $aggregateUuid)->delete()) {
-      Log::info('Deleted address', $logParams);
-    } else {
-      Log::info('Could not delete address', $logParams);
-    }
+    Address::where('id', $aggregateUuid)->delete();
   }
 
   public function onAddressKeyChanged(AddressKeyChanged $event, string $aggregateUuid) {
     $address = Address::find($aggregateUuid);
-    $logParams = ['id' => $aggregateUuid, 'key' => $event->key, 'event' => 'onAddressKeyChanged'];
 
-    if (! $address) {
-      Log::info('Address not found', $logParams);
-      return;
-    }
+    Log::info('Project event', ['id' => $aggregateUuid, 'event' => $event]);
 
     $address->key = $event->key;
-
-    if ($address->save()) {
-      Log::info('Address key updated', $logParams);
-    } else {
-      Log::info('Could not update address key', $logParams);
-    }
+    $address->save();
   }
 
   public function onAddressValueChanged(AddressValueChanged $event, string $aggregateUuid) {
     $address = Address::find($aggregateUuid);
-    $logParams = ['id' => $aggregateUuid, 'value' => $event->value, 'event' => 'onAddressValueChanged'];
 
-    if (! $address) {
-      Log::info('Address not found', $logParams);
-      return;
-    }
+    Log::info('Project event', ['id' => $aggregateUuid, 'event' => $event]);
 
     $address->value = $event->value;
-
-    if ($address->save()) {
-      Log::info('Address value updated', $logParams);
-    } else {
-      Log::info('Could not update address value', $logParams);
-    }
+    $address->save();
   }
 }

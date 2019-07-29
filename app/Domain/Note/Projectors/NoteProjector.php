@@ -15,63 +15,37 @@ class NoteProjector implements Projector {
   use ProjectsEvents;
 
   public function onNoteCreated(NoteCreated $event, string $aggregateUuid) {
-    $params = [
+    Log::info('Project event', ['id' => $aggregateUuid, 'event' => $event]);
+
+    Note::create([
       'id' => $aggregateUuid,
       'contact_id' => $event->contactId,
       'title' => $event->title,
       'text' => $event->text
-    ];
-    $logParams = ['params' => $params, 'event' => 'onNoteCreated'];
-
-    if (Note::create($params)) {
-      Log::info('Created note', $logParams);
-    } else {
-      Log::info('Failed to create note', $logParams);
-    }
+    ]);
   }
 
   public function onNoteDeleted(NoteDeleted $event, string $aggregateUuid) {
-    $logParams = ['id' => $aggregateUuid, 'event' => 'onNoteDeleted'];
+    Log::info('Project event', ['id' => $aggregateUuid, 'event' => $event]);
 
-    if (Note::where('id', $aggregateUuid)->delete()) {
-      Log::info('Deleted note', $logParams);
-    } else {
-      Log::info('Could not delete note', $logParams);
-    }
+    Note::where('id', $aggregateUuid)->delete();
   }
 
   public function onNoteTextChanged(NoteTextChanged $event, string $aggregateUuid) {
     $note = Note::find($aggregateUuid);
-    $logParams = ['id' => $aggregateUuid, 'text' => $event->text, 'event' => 'onNoteTextChanged'];
 
-    if (! $note) {
-      Log::info('Note not found', $logParams);
-      return;
-    }
+    Log::info('Project event', ['id' => $aggregateUuid, 'event' => $event]);
 
     $note->text = $event->text;
-
-    if ($note->save()) {
-      Log::info('Note text updated', $logParams);
-    } else {
-      Log::info('Could not update note text', $logParams);
-    }
+    $note->save();
   }
 
   public function onNoteTitleChanged(NoteTitleChanged $event, string $aggregateUuid) {
     $note = Note::find($aggregateUuid);
-    $logParams = ['id' => $aggregateUuid, 'title' => $event->title, 'event' => 'onNoteTitleChanged'];
 
-    if (! $note) {
-      Log::info('Note not found', $logParams);
-      return;
-    }
+    Log::info('Project event', ['id' => $aggregateUuid, 'event' => $event]);
 
     $note->title = $event->title;
-    if ($note->save()) {
-      Log::info('Note title updated', $logParams);
-    } else {
-      Log::info('Could not update note title', $logParams);
-    }
+    $note->save();
   }
 }

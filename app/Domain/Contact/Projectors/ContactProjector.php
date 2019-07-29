@@ -17,87 +17,43 @@ class ContactProjector implements Projector {
   use ProjectsEvents;
 
   public function onContactCreated(ContactCreated $event, string $aggregateUuid) {
-    $params = [
+    Log::info('Project event', ['id' => $aggregateUuid, 'event' => $event]);
+
+    Contact::create([
       'id' => $aggregateUuid,
       'user_id' => $event->userId,
       'name' => $event->name,
       'gender' => $event->gender
-    ];
-    $logParams = ['params' => $params, 'event' => 'onContactCreated'];
-
-    if (Contact::create($params)) {
-      Log::info('Created contact', $logParams);
-    } else {
-      Log::info('Failed to create contact', $logParams);
-    }
+    ]);
   }
 
   public function onContactDeleted(ContactDeleted $event, string $aggregateUuid) {
     $contact = Contact::find($aggregateUuid);
-    $logParams = ['id' => $aggregateUuid, 'event' => 'onContactDeleted'];
 
-    Log::info('Delete contact', $logParams);
+    Log::info('Project event', ['id' => $aggregateUuid, 'event' => $event]);
 
-    if (! $contact) {
-      Log::info('Contact does not exist', $logParams);
-      return;
-    }
+    foreach($contact->notes as $note) DeleteNote::from(['id' => $note->id])->execute();
 
-    Log::info('Delete contact notes', array_merge($logParams, ['count' => $contact->notes->count()]));
-    Log::info('Delete contact addresses', array_merge($logParams, ['count' => $contact->addresses->count()]));
+    foreach($contact->addresses as $address) DeleteAddress::from(['id' => $address->id])->execute();
 
-    foreach($contact->notes as $note) {
-      DeleteNote::from(['id' => $note->id])->execute();
-    }
-
-    foreach($contact->addresses as $address) {
-      DeleteAddress::from(['id' => $address->id])->execute();
-    }
-
-    if ($contact->delete()) {
-      Log::info('Deleted contact', $logParams);
-    } else {
-      Log::info('Could not delete contact', $logParams);
-    }
+    $contact->delete();
   }
 
   public function onContactNameChanged(ContactNameChanged $event, string $aggregateUuid) {
     $contact = Contact::find($aggregateUuid);
-    $logParams = ['id' => $aggregateUuid, 'name' => $event->name, 'event' => 'onContactNameChanged'];
 
-    Log::info('Update contact name', $logParams);
-
-    if (! $contact) {
-      Log::info('Contact not found', $logParams);
-      return;
-    }
+    Log::info('Project event', ['id' => $aggregateUuid, 'event' => $event]);
 
     $contact->name = $event->name;
-
-    if ($contact->save()) {
-      Log::info('Contact name updated', $logParams);
-    } else {
-      Log::info('Could not update contact name', $logParams);
-    }
+    $contact->save();
   }
 
   public function onContactGenderChanged(ContactGenderChanged $event, string $aggregateUuid) {
     $contact = Contact::find($aggregateUuid);
-    $logParams = ['id' => $aggregateUuid, 'gender' => $event->gender, 'event' => 'onContactGenderChanged'];
 
-    Log::info('Update contact gender', $logParams);
-
-    if (! $contact) {
-      Log::info('Contact not found', $logParams);
-      return;
-    }
+    Log::info('Project event', ['id' => $aggregateUuid, 'event' => $event]);
 
     $contact->gender = $event->gender;
-
-    if ($contact->save()) {
-      Log::info('Contact gender updated', $logParams);
-    } else {
-      Log::info('Could not update contact gender', $logParams);
-    }
+    $contact->save();
   }
 }
