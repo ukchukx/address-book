@@ -26,7 +26,7 @@ class NoteController extends Controller {
 
     return response([
       'success' => true,
-      'data' => $contact->notes()
+      'data' => $contact->notes()->get()
     ], Response::HTTP_OK);
   }
 
@@ -68,7 +68,7 @@ class NoteController extends Controller {
 
     Log::info('Update note', ['user' => $user->email, 'params' => $data]);
 
-    if ($note->contact()->user_id == $user->id) {
+    if ($note->contact->user_id == $user->id) {
       $note = UpdateNote::from($data)->execute();
 
       Log::info($note ? 'Note updated' : 'Could not update note', ['user' => $user->email, 'params' => $data]);
@@ -93,7 +93,7 @@ class NoteController extends Controller {
 
     Log::info('Delete note', ['user' => $user->email, 'note' => $id]);
 
-    if ($note->contact()->user_id == $user->id) {
+    if ($note->contact->user_id == $user->id) {
       DeleteNote::from(['id' => $note->id])->execute();
 
       Log::info('Note deleted', ['user' => $user->email, 'note' => $id]);

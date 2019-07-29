@@ -33,7 +33,7 @@ class ContactTest extends TestCase {
     $user = User::create($this->getUserAttributes());
     $contact = CreateContact::from($this->getContactAttributes($user))->execute();
 
-    $this->assertEquals(1, count($user->contacts()));
+    $this->assertEquals(1, $user->contacts()->count());
 
     $command = DeleteContact::from(['id' => $contact->id]);
 
@@ -41,7 +41,7 @@ class ContactTest extends TestCase {
 
     $command->execute();
 
-    $this->assertEquals(0, count($user->contacts()));
+    $this->assertEquals(0, $user->contacts()->count());
   }
 
   public function testContactNameUpdate() {

@@ -71,7 +71,7 @@ class AddressTest extends TestCase {
     $contact = CreateContact::from($this->getContactAttributes($user))->execute();
     $address = CreateAddress::from($this->getAddressAttributes($contact, 'email'))->execute();
 
-    $this->assertEquals(1, count(Contact::find($contact->id)->addresses()));
+    $this->assertEquals(1, $contact->addresses()->count());
 
     $command = DeleteAddress::from(['id' => $address->id]);
 
@@ -79,7 +79,7 @@ class AddressTest extends TestCase {
 
     $command->execute();
 
-    $this->assertEquals(0, count(Contact::find($contact->id)->addresses()));
+    $this->assertEquals(0, $contact->addresses()->count());
   }
 
   public function testAddressUpdate() {

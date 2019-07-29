@@ -16,6 +16,6 @@ class HomeController extends Controller {
 
     Log::info("List $user->email's contacts");
 
-    return view('contacts', ['contacts' => json_encode($user->contacts())]);
+    return view('contacts', ['contacts' => json_encode($user->contacts)]);
   }
 }

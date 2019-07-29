@@ -37,7 +37,7 @@ class NoteTest extends TestCase {
     $contact = CreateContact::from($this->getContactAttributes($user))->execute();
     $note = CreateNote::from($this->getNoteAttributes($contact))->execute();
 
-    $this->assertEquals(1, count(Contact::find($contact->id)->notes()));
+    $this->assertEquals(1, $contact->notes()->count());
 
     $command = DeleteNote::from(['id' => $note->id]);
 
@@ -45,7 +45,7 @@ class NoteTest extends TestCase {
 
     $command->execute();
 
-    $this->assertEquals(0, count(Contact::find($contact->id)->notes()));
+    $this->assertEquals(0, $contact->notes()->count());
   }
 
   public function testNoteTitleUpdate() {

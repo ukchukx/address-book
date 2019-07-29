@@ -26,7 +26,7 @@ class AddressController extends Controller {
 
     return response([
       'success' => true,
-      'data' => $contact->addresses()
+      'data' => $contact->addresses()->get()
     ], Response::HTTP_OK);
   }
 
@@ -69,7 +69,7 @@ class AddressController extends Controller {
 
     Log::info('Update address', ['user' => $user->email, 'params' => $data]);
 
-    if ($address->contact()->user_id == $user->id) {
+    if ($address->contact->user_id == $user->id) {
       $address = UpdateAddress::from($data)->execute();
 
       Log::info($address ? 'Address updated' : 'Could not update address', ['user' => $user->email, 'params' => $data]);
@@ -94,7 +94,7 @@ class AddressController extends Controller {
 
     Log::info('Delete address', ['user' => $user->email, 'address' => $id]);
 
-    if ($address->contact()->user_id == $user->id) {
+    if ($address->contact->user_id == $user->id) {
       DeleteAddress::from(['id' => $address->id])->execute();
 
       Log::info('Address deleted', ['user' => $user->email, 'address' => $id]);
