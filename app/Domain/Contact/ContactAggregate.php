@@ -62,7 +62,7 @@ final class ContactAggregate extends AggregateRoot {
   }
 
   public function applyContactCreated(ContactCreated $event) {
-    Log::info('Applying event', ['event' => 'ContactCreated', 'event' => $event]);
+    Log::info('Apply event to aggregate', ['event' => 'ContactCreated', 'event' => $event]);
 
     $this->name = $event->name;
     $this->gender = $event->gender;
@@ -72,7 +72,7 @@ final class ContactAggregate extends AggregateRoot {
   }
 
   public function applyContactNameChanged(ContactNameChanged $event) {
-    Log::info('Applying event', ['event' => 'ContactNameChanged', 'event' => $event]);
+    Log::info('Apply event to aggregate', ['event' => 'ContactNameChanged', 'event' => $event]);
 
     $this->name = $event->name;
 
@@ -80,7 +80,7 @@ final class ContactAggregate extends AggregateRoot {
   }
 
   public function applyContactGenderChanged(ContactGenderChanged $event) {
-    Log::info('Applying event', ['event' => 'ContactGenderChanged', 'event' => $event]);
+    Log::info('Apply event to aggregate', ['event' => 'ContactGenderChanged', 'event' => $event]);
 
     $this->gender = $event->gender;
 

@@ -62,7 +62,7 @@ final class AddressAggregate extends AggregateRoot {
   }
 
   public function applyAddressCreated(AddressCreated $event) {
-    Log::info('Applying event', ['event' => 'AddressCreated', 'event' => $event]);
+    Log::info('Apply event to aggregate', ['event' => 'AddressCreated', 'event' => $event]);
 
     $this->key = $event->key;
     $this->value = $event->value;
@@ -72,7 +72,7 @@ final class AddressAggregate extends AggregateRoot {
   }
 
   public function applyAddressValueChanged(AddressValueChanged $event) {
-    Log::info('Applying event', ['event' => 'AddressValueChanged', 'event' => $event]);
+    Log::info('Apply event to aggregate', ['event' => 'AddressValueChanged', 'event' => $event]);
 
     $this->value = $event->value;
 
@@ -80,7 +80,7 @@ final class AddressAggregate extends AggregateRoot {
   }
 
   public function applyAddressKeyChanged(AddressKeyChanged $event) {
-    Log::info('Applying event', ['event' => 'AddressKeyChanged', 'event' => $event]);
+    Log::info('Apply event to aggregate', ['event' => 'AddressKeyChanged', 'event' => $event]);
 
     $this->key = $event->key;
 

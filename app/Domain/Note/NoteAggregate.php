@@ -62,7 +62,7 @@ final class NoteAggregate extends AggregateRoot {
   }
 
   public function applyNoteCreated(NoteCreated $event) {
-    Log::info('Applying event', ['event' => 'NoteCreated', 'event' => $event]);
+    Log::info('Apply event to aggregate', ['event' => 'NoteCreated', 'event' => $event]);
 
     $this->title = $event->title;
     $this->text = $event->text;
@@ -72,7 +72,7 @@ final class NoteAggregate extends AggregateRoot {
   }
 
   public function applyNoteTitleChanged(NoteTitleChanged $event) {
-    Log::info('Applying event', ['event' => 'NoteTitleChanged', 'event' => $event]);
+    Log::info('Apply event to aggregate', ['event' => 'NoteTitleChanged', 'event' => $event]);
 
     $this->title = $event->title;
 
@@ -80,7 +80,7 @@ final class NoteAggregate extends AggregateRoot {
   }
 
   public function applyNoteTextChanged(NoteTextChanged $event) {
-    Log::info('Applying event', ['event' => 'NoteTextChanged', 'event' => $event]);
+    Log::info('Apply event to aggregate', ['event' => 'NoteTextChanged', 'event' => $event]);
 
     $this->text = $event->text;
 

@@ -4,6 +4,9 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Spatie\EventProjector\Projectionist;
+use App\Models\Address;
+use App\Models\Contact;
+use App\Models\Note;
 
 class LoadStoreAndServe extends Command {
   /**
@@ -40,10 +43,19 @@ class LoadStoreAndServe extends Command {
    * @return mixed
    */
   public function handle() {
+    $this->line("<info>Truncate read tables...</info>");
+    $this->truncateTables();
+
     $this->line("<info>Build read model...</info>");
     $this->replay();
 
     return $this->call('serve', ['--host' => env('APP_HOST', '0.0.0.0')]);
+  }
+
+  private function truncateTables(): void {
+    Contact::query()->delete();
+    Note::query()->delete();
+    Address::query()->delete();
   }
 
   private function replay(): void {
