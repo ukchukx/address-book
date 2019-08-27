@@ -1,6 +1,7 @@
 version: '3'
 services:
   address-book:
+    build: .
     image: address-book
     container_name: address-book
     restart: unless-stopped

@@ -14,7 +14,8 @@ class HomeController extends Controller {
   public function contacts() {
     $user = Auth::user();
 
-    Log::info("List $user->email's contacts");
+    $numContacts = count($user->contacts);
+    Log::info("List $user->email's $numContacts contacts");
 
     return view('contacts', ['contacts' => json_encode($user->contacts)]);
   }

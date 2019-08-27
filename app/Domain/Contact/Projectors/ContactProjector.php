@@ -19,12 +19,13 @@ class ContactProjector implements Projector {
   public function onContactCreated(ContactCreated $event, string $aggregateUuid) {
     Log::info('Project event', ['id' => $aggregateUuid, 'event' => $event]);
 
-    Contact::create([
-      'id' => $aggregateUuid,
-      'user_id' => $event->userId,
-      'name' => $event->name,
-      'gender' => $event->gender
-    ]);
+    Contact::updateOrCreate(
+      ['id' => $aggregateUuid],
+      [
+        'user_id' => $event->userId,
+        'name' => $event->name,
+        'gender' => $event->gender
+      ]);
   }
 
   public function onContactDeleted(ContactDeleted $event, string $aggregateUuid) {
