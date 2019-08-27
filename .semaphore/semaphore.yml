@@ -72,7 +72,7 @@ blocks:
       jobs:
         - name: build image
           commands:
-            - npm run production
+            - npm run prod
             - ./build.sh
             - docker save -o image.tar.gz address-book
             - cache store image-$SEMAPHORE_WORKFLOW_ID image.tar.gz
