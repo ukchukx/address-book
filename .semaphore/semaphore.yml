@@ -49,7 +49,7 @@ blocks:
           - sem-service start mysql 5.7
           - mysql --host=0.0.0.0 -uroot -e "create database address_book_test"
           - sem-version php 7.3.0
-          # - sem-service start redis
+          - sem-service start redis
           - phpbrew ext install igbinary
           - phpbrew ext install redis -- --enable-redis-igbinary
       jobs:
