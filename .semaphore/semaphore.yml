@@ -24,12 +24,12 @@ blocks:
           commands:
             - sem-version php 7.3.0
             - composer install --optimize-autoloader
-            - cache store vendor-$SEMAPHORE_GIT_BRANCH-$(checksum composer.lock) vendor
+            - cache store vendor-$SEMAPHORE_GIT_BRANCH vendor
 
         - name: npm
           commands:
             - npm i --no-audit
-            - cache store node_modules-$SEMAPHORE_GIT_BRANCH-$(checksum package-lock.json) node_modules
+            - cache store node_modules-$SEMAPHORE_GIT_BRANCH node_modules
 
   - name: Test
     task:
@@ -44,7 +44,7 @@ blocks:
         commands:
           - checkout
           - cp ../.env.testing .
-          - cache restore vendor-$SEMAPHORE_GIT_BRANCH-$(checksum composer.lock)
+          - cache restore vendor-$SEMAPHORE_GIT_BRANCH
           - sudo apt-get install -y -qq mysql-client
           - sem-service start mysql 5.7
           - mysql --host=0.0.0.0 -uroot -e "create database address_book_test"
@@ -65,8 +65,8 @@ blocks:
         commands:
           - checkout
           - cp ../.env.production .env
-          - cache restore vendor-$SEMAPHORE_GIT_BRANCH-$(checksum composer.lock)
-          - cache restore node_modules-$SEMAPHORE_GIT_BRANCH-$(checksum package-lock.json)
+          - cache restore vendor-$SEMAPHORE_GIT_BRANCH
+          - cache restore node_modules-$SEMAPHORE_GIT_BRANCH
           - sem-version php 7.3.0
           - composer install --optimize-autoloader --no-dev
       jobs:

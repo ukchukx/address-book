@@ -24,6 +24,9 @@ blocks:
     task:
       secrets:
         - name: ssh-key
+      epilogue:
+        commands:
+          - cache clear
       jobs:
         - name: deploy
           commands:
