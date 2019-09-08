@@ -29,6 +29,9 @@ class Init extends Command {
   * @return mixed
   */
   public function handle() {
+    $this->line('<info>Generate oAuth keys...</info>');
+    $this->call('passport:install');
+
     $this->line('<info>Run migrations...</info>');
     $this->call('migrate', ['--force' => true]);
 
