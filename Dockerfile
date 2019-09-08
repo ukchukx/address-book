@@ -24,12 +24,15 @@ RUN docker-php-ext-install mbstring pdo pdo_mysql
 RUN rm -rf /tmp/pear
 
 WORKDIR /app
-COPY . /app
+COPY . .
 
 RUN mkdir bootstrap/cache; \
     chmod 777 -R bootstrap/cache; \
     php artisan cache:clear; \
     php artisan config:cache; \
-    php artisan route:cache
+    php artisan route:cache; \
+    php artisan view:cache; \
+    php artisan passport:install; \
+    php artisan event-projector:cache-event-handlers
 
 CMD php artisan init
