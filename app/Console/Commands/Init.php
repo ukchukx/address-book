@@ -14,7 +14,7 @@ class Init extends Command {
   *
   * @var string
   */
-  protected $signature = 'init';
+  protected $signature = 'address-book:init';
 
   /**
   * The console command description.
@@ -29,12 +29,12 @@ class Init extends Command {
   * @return mixed
   */
   public function handle() {
-    $this->line('<info>Generate oAuth keys...</info>');
+    $this->line('<info>Generate OAuth keys...</info>');
     $this->call('passport:install');
 
     $this->line('<info>Run migrations...</info>');
     $this->call('migrate', ['--force' => true]);
 
-    $this->call('load:serve');
+    $this->call('address-book:serve');
   }
 }

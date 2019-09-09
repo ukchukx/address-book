@@ -34,4 +34,4 @@ RUN mkdir bootstrap/cache; \
     php artisan view:cache; \
     php artisan event-projector:cache-event-handlers
 
-CMD php artisan init
+CMD php artisan address-book:init
