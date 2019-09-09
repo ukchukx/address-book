@@ -106,6 +106,7 @@ export default {
     contactId: {
       immediate: true,
       handler() {
+        this.note.contact_id = this.contactId;
         this.fetchNotes();
       }
     }
