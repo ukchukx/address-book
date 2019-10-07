@@ -4,6 +4,8 @@
     <div class="card-body">
       <h3 class="text-muted text-center" v-if="!contact">No contact selected</h3>
       <div v-else>
+        <h4>{{ contact.name }}</h4>
+        <hr>
         <contact-form
           ref="form"
           button-text="Update contact"
