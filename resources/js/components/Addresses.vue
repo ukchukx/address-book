@@ -1,6 +1,7 @@
 <template>
   <div>
     <p><span class="h4">Addresses</span> &emsp; <button @click="view(null)">Add</button></p>
+    <p v-if="loadingAddresses"><i>Loading...</i></p>
     <ul v-if="addresses.length" class="list-group">
       <li v-for="address in addresses" :key="address.id" class="list-group-item d-flex justify-content-between align-items-center">
         <span class="badge badge-secondary">{{ address.key | keyLabel }}</span>
@@ -78,6 +79,7 @@ export default {
   data() {
     return {
       addresses: [],
+      loadingAddresses: false,
       address: {
         id: '',
         contact_id: this.contactId,
@@ -123,6 +125,7 @@ export default {
     contactId: {
       immediate: true,
       handler() {
+        this.address.contact_id = this.contactId;
         this.fetchAddresses();
       }
     }
@@ -136,9 +139,16 @@ export default {
   },
   methods: {
     fetchAddresses() {
+      this.addresses = [];
+      this.loadingAddresses = true;
+
       axios.get(`/api/contacts/${this.contactId}/addresses`)
         .then(({ data: { data } }) => {
           this.addresses = data;
+          this.loadingAddresses = false;
+        })
+        .catch(() => {
+          this.loadingAddresses = false;
         });
     },
     deleteAddress(addressId) {

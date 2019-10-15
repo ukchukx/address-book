@@ -1,6 +1,7 @@
 <template>
   <div>
     <p><span class="h4">Notes</span> &emsp; <button @click="view(null)">Add</button></p>
+    <p v-if="loadingNotes"><i>Loading...</i></p>
     <ul v-if="notes.length" class="list-group">
       <li v-for="note in notes" :key="note.id" class="list-group-item d-flex justify-content-between align-items-center">
         {{ note.title }}
@@ -78,6 +79,7 @@ export default {
   data() {
     return {
       notes: [],
+      loadingNotes: false,
       note: {
         id: '',
         contact_id: this.contactId,
@@ -113,9 +115,16 @@ export default {
   },
   methods: {
     fetchNotes() {
+      this.notes = [];
+      this.loadingNotes = true;
+
       axios.get(`/api/contacts/${this.contactId}/notes`)
         .then(({ data: { data } }) => {
           this.notes = data;
+          this.loadingNotes = false;
+        })
+        .catch(() => {
+          this.loadingNotes = false;
         });
     },
     deleteNote(noteId) {
