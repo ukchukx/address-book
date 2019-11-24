@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Domain\Address\Events;
-use Spatie\EventProjector\ShouldBeStored;
+use Spatie\EventSourcing\ShouldBeStored;
 
 final class AddressValueChanged implements ShouldBeStored {
   /** @var string */

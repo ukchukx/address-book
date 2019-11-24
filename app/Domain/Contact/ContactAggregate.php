@@ -3,7 +3,7 @@
 namespace App\Domain\Contact;
 
 use Log;
-use Spatie\EventProjector\AggregateRoot;
+use Spatie\EventSourcing\AggregateRoot;
 use App\Domain\Contact\Events\ContactCreated;
 use App\Domain\Contact\Events\ContactDeleted;
 use App\Domain\Contact\Events\ContactNameChanged;

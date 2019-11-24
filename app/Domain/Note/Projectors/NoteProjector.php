@@ -3,8 +3,8 @@
 namespace App\Domain\Note\Projectors;
 
 use Log;
-use Spatie\EventProjector\Projectors\Projector;
-use Spatie\EventProjector\Projectors\ProjectsEvents;
+use Spatie\EventSourcing\Projectors\Projector;
+use Spatie\EventSourcing\Projectors\ProjectsEvents;
 use App\Domain\Note\Events\NoteCreated;
 use App\Domain\Note\Events\NoteDeleted;
 use App\Domain\Note\Events\NoteTextChanged;

@@ -3,7 +3,7 @@
 namespace App\Domain\Note;
 
 use Log;
-use Spatie\EventProjector\AggregateRoot;
+use Spatie\EventSourcing\AggregateRoot;
 use App\Domain\Note\Events\NoteCreated;
 use App\Domain\Note\Events\NoteDeleted;
 use App\Domain\Note\Events\NoteTextChanged;

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Domain\Contact\Events;
-use Spatie\EventProjector\ShouldBeStored;
+use Spatie\EventSourcing\ShouldBeStored;
 
 final class ContactGenderChanged implements ShouldBeStored {
   /** @var string */

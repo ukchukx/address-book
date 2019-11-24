@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Spatie\EventProjector\Facades\Projectionist;
+use Spatie\EventSourcing\Facades\Projectionist;
 use App\Domain\Address\Projectors\AddressProjector;
 use App\Domain\Contact\Projectors\ContactProjector;
 use App\Domain\Note\Projectors\NoteProjector;

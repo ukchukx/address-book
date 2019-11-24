@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Spatie\EventProjector\Projectionist;
+use Spatie\EventSourcing\Projectionist;
 use App\Models\Address;
 use App\Models\Contact;
 use App\Models\Note;
@@ -23,7 +23,7 @@ class LoadStoreAndServe extends Command {
    */
   protected $description = 'Load read store, then start the server';
 
-  /** @var \Spatie\EventProjector\Projectionist */
+  /** @var \Spatie\EventSourcing\Projectionist */
   protected $projectionist;
 
   /**
@@ -59,7 +59,7 @@ class LoadStoreAndServe extends Command {
   }
 
   private function replay(): void {
-    $storeEventClass = config('event-projector.stored_event_model');
+    $storeEventClass = config('event-sourcing.stored_event_model');
 
     $replayCount = $storeEventClass::startingFrom(0)->count();
 

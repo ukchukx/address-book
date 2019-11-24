@@ -3,7 +3,7 @@
 namespace App\Domain\Address;
 
 use Log;
-use Spatie\EventProjector\AggregateRoot;
+use Spatie\EventSourcing\AggregateRoot;
 use App\Domain\Address\Events\AddressCreated;
 use App\Domain\Address\Events\AddressDeleted;
 use App\Domain\Address\Events\AddressKeyChanged;

@@ -3,8 +3,8 @@
 namespace App\Domain\Contact\Projectors;
 
 use Log;
-use Spatie\EventProjector\Projectors\Projector;
-use Spatie\EventProjector\Projectors\ProjectsEvents;
+use Spatie\EventSourcing\Projectors\Projector;
+use Spatie\EventSourcing\Projectors\ProjectsEvents;
 use App\Domain\Contact\Events\ContactCreated;
 use App\Domain\Contact\Events\ContactDeleted;
 use App\Domain\Contact\Events\ContactNameChanged;

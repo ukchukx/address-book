@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Domain\Note\Events;
-use Spatie\EventProjector\ShouldBeStored;
+use Spatie\EventSourcing\ShouldBeStored;
 
 final class NoteTitleChanged implements ShouldBeStored {
   /** @var string */

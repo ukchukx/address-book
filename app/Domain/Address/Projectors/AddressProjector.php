@@ -3,8 +3,8 @@
 namespace App\Domain\Address\Projectors;
 
 use Log;
-use Spatie\EventProjector\Projectors\Projector;
-use Spatie\EventProjector\Projectors\ProjectsEvents;
+use Spatie\EventSourcing\Projectors\Projector;
+use Spatie\EventSourcing\Projectors\ProjectsEvents;
 use App\Domain\Address\Events\AddressCreated;
 use App\Domain\Address\Events\AddressDeleted;
 use App\Domain\Address\Events\AddressKeyChanged;
