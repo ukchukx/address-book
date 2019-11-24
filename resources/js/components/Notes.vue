@@ -27,7 +27,7 @@
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">{{ modalTitle }}</h5>
+            <h5 class="modal-title">Write note</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -42,7 +42,7 @@
               </div>
               <div class="form-group row">
                 <label class="control-label col-sm-12">Text</label>
-                <div class="col-sm-12">
+                <div class="col-sm-12 editor-container">
                   <vue-trix v-model="note.text" placeholder="Enter note" />
                 </div>
               </div>
@@ -89,9 +89,6 @@ export default {
     };
   },
   computed: {
-    modalTitle() {
-      return !!this.note.id ? 'Update note' : 'Add note';
-    },
     titleOk() {
       const { note: { id, title }, notes } = this;
 
@@ -182,3 +179,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.editor-container {
+  min-height: 500px;
+}
+</style>
