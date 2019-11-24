@@ -3,13 +3,16 @@
     <p><span class="h4">Notes</span> &emsp; <button @click="view(null)">Add</button></p>
     <p v-if="loadingNotes"><i>Loading...</i></p>
     <ul v-if="notes.length" class="list-group">
-      <li v-for="note in notes" :key="note.id" class="list-group-item d-flex justify-content-between align-items-center">
+      <li 
+        v-for="(note, idx) in notes" 
+        :key="note.id" 
+        class="list-group-item d-flex justify-content-between align-items-center">
         {{ note.title }}
         <div class="btn-group btn-group-sm" role="group">
           <button
             type="button"
             class="btn btn-outline-secondary"
-            @click.prevent.stop="view(note)">
+            @click.prevent.stop="view(note, idx)">
             Edit
           </button>
           <button
@@ -50,7 +53,7 @@
           </div>
           <div class="modal-footer">
             <button
-              :disabled="!formOk"
+              :disabled="disableSaveButton"
               @click.stop.prevent="save()"
               type="button"
               class="btn btn-secondary"
@@ -80,6 +83,8 @@ export default {
     return {
       notes: [],
       loadingNotes: false,
+      busy: false,
+      currIndex: -1,
       note: {
         id: '',
         contact_id: this.contactId,
@@ -99,6 +104,9 @@ export default {
     },
     formOk() {
       return this.titleOk && this.textOk;
+    },
+    disableSaveButton() {
+      return !this.formOk || this.busy;
     }
   },
   watch: {
@@ -136,45 +144,57 @@ export default {
         });
     },
     save() {
+      if (this.busy) return;
+
       this.note.title = this.note.title.trim();
       this.note.text = this.note.text.trim();
+      this.busy = true;
 
       if (this.note.id) {
         axios.put(`/api/notes/${this.note.id}`, this.note)
           .then(({ data: { data } }) => {
+            this.busy = false;
             $(this.$refs.modal).modal('hide');
 
-            this.notes = this.notes.map(n => n.id === this.note.id ? data : n);
+            this.notes[this.currIndex] = data;
 
             this.resetNote();
           })
           .catch(() => {
+            this.busy = false;
             alert('Could not update');
           });
       } else {
         axios.post('/api/notes', this.note)
           .then(({ data: { data } }) => {
+            this.busy = false;
             this.notes.push(data);
 
             $(this.$refs.modal).modal('hide');
           })
           .catch(() => {
+            this.busy = false;
             alert('Could not create');
           });
       }
     },
-    view(note) {
+    view(note, index = -1) {
+      this.currIndex = index;
+      
       if (note) {
         this.note = { ...note };
       } else {
         this.resetNote();
       }
+
       $(this.$refs.modal).modal('show');
     },
     resetNote() {
       this.note.id = '';
       this.note.text = '';
       this.note.title = '';
+
+      this.currIndex = -1;
     }
   }
 }
