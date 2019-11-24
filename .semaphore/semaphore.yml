@@ -22,7 +22,7 @@ blocks:
       jobs:
         - name: composer
           commands:
-            - sem-version php 7.3.0
+            - sem-version php 7.3.6
             - composer install --optimize-autoloader
             - cache store vendor-$SEMAPHORE_GIT_BRANCH vendor
 
@@ -48,7 +48,7 @@ blocks:
           - sudo apt-get install -y -qq mysql-client
           - sem-service start mysql 5.7
           - mysql --host=0.0.0.0 -uroot -e "create database address_book_test"
-          - sem-version php 7.3.0
+          - sem-version php 7.3.6
           - sem-service start redis
           - phpbrew ext install igbinary
           - phpbrew ext install redis -- --enable-redis-igbinary
@@ -67,7 +67,7 @@ blocks:
           - cp ../.env.production .env
           - cache restore vendor-$SEMAPHORE_GIT_BRANCH
           - cache restore node_modules-$SEMAPHORE_GIT_BRANCH
-          - sem-version php 7.3.0
+          - sem-version php 7.3.6
           - composer install --optimize-autoloader --no-dev
       jobs:
         - name: build image
