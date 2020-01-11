@@ -46,7 +46,12 @@
               <div class="form-group row">
                 <label class="control-label col-sm-12">Text</label>
                 <div class="col-sm-12 editor-container">
-                  
+                   <quill-editor v-model="note.text"
+                      ref="editor"
+                      :options="editorOption"
+                      @blur="onEditorBlur($event)"
+                      @focus="onEditorFocus($event)"
+                      @ready="onEditorReady($event)" />
                 </div>
               </div>
             </form>
@@ -66,9 +71,16 @@
 </template>
 
 <script>
+import 'quill/dist/quill.core.css';
+import 'quill/dist/quill.snow.css';
+import 'quill/dist/quill.bubble.css';
+import { quillEditor } from 'vue-quill-editor';
 
 export default {
   name: 'Notes',
+  components: {
+    quillEditor
+  },
   props: {
     contactId: {
       type: String,
