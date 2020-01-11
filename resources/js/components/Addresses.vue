@@ -1,24 +1,14 @@
 <template>
   <div>
-    <p><span class="h4">Addresses</span> &emsp; <button @click="view(null)">New</button></p>
+    <p><span class="h4">Addresses</span> &emsp; <button @click="view()">New</button></p>
     <p v-if="loadingAddresses"><i>Loading...</i></p>
     <ul v-if="addresses.length" class="list-group">
-      <li v-for="address in addresses" :key="address.id" class="list-group-item d-flex justify-content-between align-items-center">
+      <li v-for="(address, i) in addresses" :key="address.id" class="list-group-item d-flex justify-content-between align-items-center">
         <span class="badge badge-secondary">{{ address.key | keyLabel }}</span>
         {{ address.value }}
         <div class="btn-group btn-group-sm" role="group">
-          <button
-            type="button"
-            class="btn btn-outline-secondary"
-            @click.prevent.stop="view(address)">
-            Edit
-          </button>
-          <button
-            type="button"
-            class="btn btn-outline-danger"
-            @click.prevent.stop="deleteAddress(address.id)">
-            Delete
-          </button>
+          <button type="button" class="btn btn-outline-secondary" @click.prevent.stop="view(i)">Edit</button>
+          <button type="button" class="btn btn-outline-danger" @click.prevent.stop="deleteAddress(i)">Delete</button>
         </div>
       </li>
     </ul>
@@ -89,6 +79,7 @@ export default {
     return {
       addresses: [],
       loadingAddresses: false,
+      currAddress: -1,
       address: {
         id: '',
         contact_id: this.contactId,
@@ -109,15 +100,14 @@ export default {
       if (this.address.key === 'physical') return 'Enter address';
     },
     keyOk() {
-      return ['email', 'phone', 'physical'].indexOf(this.address.key) !== -1;
+      return ['email', 'phone', 'physical'].includes(this.address.key);
     },
     valueOk() {
-      const { address: { id, value, key }, addresses } = this;
+      const { address: { id, value, key }, addresses, currAddress } = this;
 
       return !!value &&
-        addresses
-          .filter(a => a.id !== id && a.key === key)
-          .every(a => a.value !== value);
+        (currAddress === -1 ? true : addresses[currAddress].value !== value.trim()) && // did the value change?
+        addresses.filter(a => a.key === key).every(a => a.value !== value); // ensure it's not a duplicate
     },
     formatOk() {
       if (this.address.key === 'email') return /^\w+\.*\w*@\w+\.\w+/.test(this.address.value);
@@ -160,12 +150,12 @@ export default {
           this.loadingAddresses = false;
         });
     },
-    deleteAddress(addressId) {
+    deleteAddress(index) {
       if (!confirm('Are you sure?')) return;
 
-      axios.delete(`/api/addresses/${addressId}`)
+      axios.delete(`/api/addresses/${this.addresses[index].id}`)
         .then(() => {
-          this.addresses = this.addresses.filter(({ id }) => addressId !== id);
+          this.addresses.splice(index, 1);
         })
         .catch(() => {
           alert('Could not delete');
@@ -180,7 +170,7 @@ export default {
           .then(({ data: { data } }) => {
             $(this.$refs.modal).modal('hide');
 
-            this.addresses = this.addresses.map(a => a.id === this.address.id ? data : a);
+            this.addresses[this.currAddress] = data;
 
             this.resetAddress();
           })
@@ -199,18 +189,22 @@ export default {
           });
       }
     },
-    view(address) {
-      if (address) {
-        this.address = { ...address };
+    view(index = -1) {
+      this.currAddress = index;
+
+      if (index !== -1) {
+        this.address = { ...this.addresses[this.currAddress] };
       } else {
         this.resetAddress();
       }
+
       $(this.$refs.modal).modal('show');
     },
     resetAddress() {
       this.address.id = '';
       this.address.value = '';
       this.address.key = 'phone';
+      this.currAddress = -1;
     }
   }
 }

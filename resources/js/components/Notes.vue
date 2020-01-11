@@ -1,10 +1,10 @@
 <template>
   <div>
-    <p><span class="h4">Notes</span> &emsp; <button @click="view(null)">New</button></p>
+    <p><span class="h4">Notes</span> &emsp; <button @click="view()">New</button></p>
     <p v-if="loadingNotes"><i>Loading...</i></p>
     <ul v-if="notes.length" class="list-group">
       <li 
-        v-for="(note, idx) in notes" 
+        v-for="(note, i) in notes" 
         :key="note.id" 
         class="list-group-item d-flex justify-content-between align-items-center">
         {{ note.title }}
@@ -12,13 +12,13 @@
           <button
             type="button"
             class="btn btn-outline-secondary"
-            @click.prevent.stop="view(note, idx)">
+            @click.prevent.stop="view(i)">
             Edit
           </button>
           <button
             type="button"
             class="btn btn-outline-danger"
-            @click.prevent.stop="deleteNote(note.id)">
+            @click.prevent.stop="deleteNote(i)">
             Delete
           </button>
         </div>
@@ -86,7 +86,7 @@ export default {
       notes: [],
       loadingNotes: false,
       busy: false,
-      currIndex: -1,
+      currNote: -1,
       lastSavedNote: '',
       note: {
         id: '',
@@ -156,12 +156,12 @@ export default {
           this.loadingNotes = false;
         });
     },
-    deleteNote(noteId) {
+    deleteNote(index) {
       if (!confirm('Are you sure?')) return;
 
-      axios.delete(`/api/notes/${noteId}`)
+      axios.delete(`/api/notes/${this.notes[index].id}`)
         .then(() => {
-          this.notes = this.notes.filter(({ id }) => noteId !== id);
+          this.notes.splice(index, 1);
         })
         .catch(() => {
           alert('Could not delete');
@@ -178,7 +178,7 @@ export default {
         axios.put(`/api/notes/${this.note.id}`, this.note)
           .then(({ data: { data } }) => {
             this.busy = false;
-            this.notes[this.currIndex] = data;
+            this.notes[this.currNote] = data;
             this.lastSavedNote = this.note.text;
           })
           .catch(() => {
@@ -199,11 +199,11 @@ export default {
           });
       }
     },
-    view(note, index = -1) {
-      this.currIndex = index;
+    view(index = -1) {
+      this.currNote = index;
       
-      if (note) {
-        this.note = { ...note };
+      if (index !== -1) {
+        this.note = { ...this.notes[this.currNote] };
         this.lastSavedNote = this.note.text;
       } else {
         this.resetNote();
@@ -216,7 +216,7 @@ export default {
       this.note.text = '';
       this.note.title = '';
       this.lastSavedNote = '';
-      this.currIndex = -1;
+      this.currNote = -1;
     }
   }
 }
