@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p><span class="h4">Notes</span> &emsp; <button @click="view(null)">Add</button></p>
+    <p><span class="h4">Notes</span> &emsp; <button @click="view(null)">New</button></p>
     <p v-if="loadingNotes"><i>Loading...</i></p>
     <ul v-if="notes.length" class="list-group">
       <li 
@@ -40,18 +40,17 @@
               <div class="form-group row">
                 <label class="control-label col-sm-12">Title</label>
                 <div class="col-sm-12">
-                  <input type="text" class="form-control" v-model="note.title">
+                  <inline-input 
+                    label-classes="h3"
+                    input-classes="form-control"
+                    placeholder="Title..." 
+                    v-model="note.title" />
                 </div>
               </div>
               <div class="form-group row">
                 <label class="control-label col-sm-12">Text</label>
                 <div class="col-sm-12 editor-container">
-                   <quill-editor v-model="note.text"
-                      ref="editor"
-                      :options="editorOption"
-                      @blur="onEditorBlur($event)"
-                      @focus="onEditorFocus($event)"
-                      @ready="onEditorReady($event)" />
+                   <quill-editor v-model="note.text" ref="editor" />
                 </div>
               </div>
             </form>
@@ -61,7 +60,7 @@
               :disabled="disableSaveButton"
               @click.stop.prevent="save()"
               type="button"
-              class="btn btn-secondary"
+              class="btn btn-outline-secondary"
             >Save</button>
           </div>
         </div>
@@ -75,10 +74,12 @@ import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
 import 'quill/dist/quill.bubble.css';
 import { quillEditor } from 'vue-quill-editor';
+import InlineInput from './InlineInput';
 
 export default {
   name: 'Notes',
   components: {
+    InlineInput,
     quillEditor
   },
   props: {
@@ -92,7 +93,7 @@ export default {
       notes: [],
       loadingNotes: false,
       busy: false,
-      currIndex: -1,
+      currIndex: 0,
       note: {
         id: '',
         contact_id: this.contactId,
@@ -209,6 +210,7 @@ export default {
 </script>
 <style scoped>
 .editor-container {
-  min-height: 500px;
+  max-height: 500px;
+  overflow-y: scroll;
 }
 </style>

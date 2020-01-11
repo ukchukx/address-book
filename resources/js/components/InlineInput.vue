@@ -1,14 +1,16 @@
 <template>
   <input 
+    :class="inputClasses"
     v-if="editing" 
     :type="inputType" 
-    v-model="internalValue" 
+    :value="value" 
     :placeholder="placeholder"
     ref="inputEl"
-    v-on:keyup.enter="handleEnter()"
-    @blur="handleBlur()">
+    v-on:keyup.enter="handleEnter"
+    @input="handleInput"
+    @blur="handleBlur">
 
-  <span v-else @click="toggle()">{{ !!internalValue ? internalValue : placeholder }}</span>
+  <span :class="spanClasses" v-else @click="toggle()">{{ !!value ? value : placeholder }}</span>
 </template>
 <script>
 export default {
@@ -29,22 +31,27 @@ export default {
     placeholder: {
       type: String,
       default: () => ''
+    },
+    labelClasses: {
+      type: String,
+      default: () => ''
+    },
+    inputClasses: {
+      type: String,
+      default: () => ''
     }
   },
   data() {
     return {
-      internalValue: this.value,
       editing: false
     };
   },
   computed: {
     inputType() {
       return this.isNumber ? 'number' : 'text';
-    }
-  },
-  watch: {
-    internalValue() {
-      if (!this.emitOnBlur) this.emitValue();
+    },
+    spanClasses() {
+      return `${this.labelClasses} inline-input-label`;
     }
   },
   methods: {
@@ -64,9 +71,17 @@ export default {
       this.toggle();
       this.emitValue();
     },
+    handleInput() {
+      if (!this.emitOnBlur) this.emitValue();
+    },
     emitValue() {
-      this.$emit('input', this.internalValue);
+      this.$emit('input', this.$refs.inputEl.value);
     }
   }
 };
 </script>
+<style scoped>
+.inline-input-label:hover {
+  cursor: pointer
+}
+</style>
