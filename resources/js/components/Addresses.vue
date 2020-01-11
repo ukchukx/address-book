@@ -28,17 +28,18 @@
           <div class="modal-body">
             <form>
               <div class="form-group row">
-                <label class="control-label col-sm-12">Type</label>
+                <label class="control-label col-sm-12">Type</label><br>
                 <div class="col-sm-12">
-                  <select v-model="address.key" id="" class="form-control">
-                    <option value="phone">Phone</option>
-                    <option value="email">Email</option>
-                    <option value="physical">Address</option>
-                  </select>
+                  <inline-input
+                    label-classes="h3"
+                    input-classes="form-control"
+                    type="select"
+                    :options="keyOptions"
+                    v-model="address.key" />
                 </div>
               </div>
               <div class="form-group row">
-                <label class="control-label col-sm-12">Value</label>
+                <label class="control-label col-sm-12">Value</label><br>
                 <div class="col-sm-12">
                   <inline-input 
                     label-classes="h3"
@@ -79,6 +80,11 @@ export default {
   },
   data() {
     return {
+      keyOptions: [
+        { label: 'Phone', value: 'phone' },
+        { label: 'Email', value: 'email' },
+        { label: 'Address', value: 'physical' }
+      ],
       addresses: [],
       loadingAddresses: false,
       currAddress: -1,

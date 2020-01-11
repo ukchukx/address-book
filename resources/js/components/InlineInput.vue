@@ -1,16 +1,35 @@
 <template>
   <input 
     :class="inputClasses"
-    v-if="editing" 
-    :type="inputType" 
+    v-if="editing && (isText || isNumber)" 
+    :type="type" 
     :value="value" 
     :placeholder="placeholder"
     ref="inputEl"
     v-on:keyup.enter="handleEnter"
     @input="handleInput"
     @blur="handleBlur">
+  
+  <select 
+    :class="inputClasses"
+    v-else-if="editing && isSelect"
+    ref="inputEl" 
+    :value="value"
+    @change="handleChange"
+    @blur="handleBlur">
+    <option v-if="placeholder" disabled value>{{ placeholder }}</option>
+    <option 
+      :key="i"
+      v-for="(o, i) in options" 
+      :value="o.value">
+      {{ o.label }}
+    </option>
+  </select>
 
-  <span :class="spanClasses" v-else @click="toggle()">{{ !!value ? value : placeholder }}</span>
+  <span :class="spanClasses" v-else @click="toggle()">
+    {{ label }}
+    <span v-if="isSelect">&#9660;</span>
+  </span>
 </template>
 <script>
 export default {
@@ -20,9 +39,13 @@ export default {
       type: [Number, String],
       default: () => '' 
     },
-    isNumber: {
-      type: Boolean,
-      default: () => false
+    type: {
+      type: String,
+      default: () => 'text'
+    },
+    options: {
+      type: Array,
+      default: () => []
     },
     emitOnBlur: {
       type: Boolean,
@@ -47,11 +70,26 @@ export default {
     };
   },
   computed: {
+    isText() {
+      return this.type === 'text';
+    },
+    isNumber() {
+      return this.type === 'number';
+    },
+    isSelect() {
+      return this.type === 'select';
+    },
     inputType() {
       return this.isNumber ? 'number' : 'text';
     },
     spanClasses() {
       return `${this.labelClasses} inline-input-label`;
+    },
+    label() {
+      if (this.isNumber) return this.value === '' ? this.placeholder : this.value;
+      if (this.isText) return this.value ? this.value : this.placeholder;
+      // Select
+      return this.options.reduce((x, { label, value }) => this.value === value ? label : x, this.value);
     }
   },
   methods: {
@@ -74,8 +112,11 @@ export default {
     handleInput() {
       if (!this.emitOnBlur) this.emitValue();
     },
+    handleChange() {
+      this.emitValue();
+    },
     emitValue() {
-      this.$emit('input', this.$refs.inputEl.value);
+      this.$emit('input', this.isNumber ? parseFloat(this.$refs.inputEl.value) : this.$refs.inputEl.value);
     }
   }
 };

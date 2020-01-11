@@ -5,11 +5,14 @@
       <inline-input label-classes="h3" input-classes="form-control" placeholder="Name..." v-model="form.name" :emit-on-blur="!showButton" />
     </div>
     <div class="form-group">
-      <label>Gender</label>
-      <select v-model="form.gender" class="form-control">
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-      </select>
+      <label>Gender</label><br>
+      <inline-input
+        label-classes="h3"
+        input-classes="form-control"
+        placeholder="Select gender"
+        type="select"
+        :options="genderOptions"
+        v-model="form.gender" />
     </div>
     <div v-if="showButton" class="form-group">
       <button :disabled="!formOk" type="submit">{{ buttonText }}</button>
@@ -45,6 +48,10 @@ export default {
       { name: '', gender: '' };
 
     return {
+      genderOptions: [
+        { label: 'Male', value: 'male' },
+        { label: 'Female', value: 'female' }
+      ],
       oldForm: { ...form },
       form
     };
