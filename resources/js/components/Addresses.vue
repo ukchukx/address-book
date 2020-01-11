@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p><span class="h4">Addresses</span> &emsp; <button @click="view(null)">Add</button></p>
+    <p><span class="h4">Addresses</span> &emsp; <button @click="view(null)">New</button></p>
     <p v-if="loadingAddresses"><i>Loading...</i></p>
     <ul v-if="addresses.length" class="list-group">
       <li v-for="address in addresses" :key="address.id" class="list-group-item d-flex justify-content-between align-items-center">
@@ -48,7 +48,11 @@
               <div class="form-group row">
                 <label class="control-label col-sm-12">Value</label>
                 <div class="col-sm-12">
-                  <input type="text" class="form-control" v-model="address.value" :placeholder="placeholder">
+                  <inline-input 
+                    label-classes="h3"
+                    input-classes="form-control"
+                    :placeholder="placeholder" 
+                    v-model="address.value" />
                 </div>
               </div>
             </form>
@@ -68,8 +72,13 @@
 </template>
 
 <script>
+import InlineInput from './InlineInput';
+
 export default {
   name: 'Addresses',
+  components: {
+    InlineInput
+  },
   props: {
     contactId: {
       type: String,
