@@ -19,4 +19,15 @@ class HomeController extends Controller {
 
     return view('contacts', ['contacts' => json_encode($user->contacts)]);
   }
+
+  public function contact($id) {
+    $user = Auth::user();
+    $contact = $user->findContact($id);
+
+    if (! $contact) {
+      abort(404);
+    };
+
+    return view('contact', ['contact' => json_encode($contact)]);
+  }
 }

@@ -1,20 +1,31 @@
 <template>
-  <div v-if="isMobile && !contact"></div>
-  <div v-else class="card">
-    <div class="card-body">
-      <h3 class="text-muted text-center" v-if="!contact">No contact selected</h3>
-      <div v-else>
-        <h4>{{ contact.name }}</h4>
-        <hr>
-        <contact-form
-          ref="form"
-          button-text="Update contact"
-          :initial-data="form"
-          @form-submitted="submit" />
-        <hr>
-        <notes :contact-id="contact.id" />
-        <hr>
-        <addresses :contact-id="contact.id" />
+  <div class="row justify-content-center">
+    <div class="col-sm-12">
+      <a href="/contacts" class="mb-2">&larr; Back</a>
+    </div>
+    <div class="col-sm-12">
+      <div class="row">
+        <div class="col-sm-12 col-md-3 mb-3">
+          <div class="card">
+            <div class="card-body">
+              <hr>
+              <contact-form
+                ref="form"
+                button-text="Update contact"
+                :initial-data="form"
+                @form-submitted="submit" />
+              <hr>
+              <addresses :contact-id="contact.id" />
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-9">
+          <div class="card">
+            <div class="card-body">
+              <notes :contact-id="contact.id" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -24,11 +35,9 @@
 import ContactForm from './ContactForm';
 import Notes from './Notes';
 import Addresses from './Addresses';
-import MobileDetect from './mixins/MobileDetect';
 
 export default {
   name: 'Contact',
-  mixins: [MobileDetect],
   components: {
     ContactForm,
     Notes,
@@ -36,35 +45,22 @@ export default {
   },
   props: {
     contact: {
+      required: true,
       type: Object
     }
   },
   data() {
     return {
-      form: { name: '', gender: '' }
+      form: { name: this.contact.name, gender: this.contact.gender },
+      localContact: this.contact
     };
-  },
-  watch: {
-    contact: {
-      deep: true,
-      immediate: true,
-      handler(c) {
-        if (! c) return;
-
-        const { name, gender } = c || { name: '', gender: '' };
-        this.form = Object.assign(this.form, { name, gender });
-
-        this.resetForm(this.form);
-      }
-    }
   },
   methods: {
     submit(form) {
-      if (! confirm('Are you sure?')) return;
-
-      axios.put(`/api/contacts/${this.contact.id}`, form)
+      axios.put(`/api/contacts/${this.localContact.id}`, form)
         .then(({ data: { data } }) => {
-          this.$emit('contact-updated', data);
+          console.log(data);
+          this.localContact = data;
 
           this.form.name = data.name;
           this.form.gender = data.gender;
@@ -72,7 +68,7 @@ export default {
           this.resetForm(this.form);
         })
         .catch(({ response }) => {
-          alert('Could not create');
+          alert('Could not update');
         });
     },
     resetForm() {

@@ -2,7 +2,7 @@
   <form @submit.stop.prevent="submit()">
     <div class="form-group">
       <label>Name</label>
-      <input type="text" v-model="form.name" class="form-control">
+      <inline-input class="form-control" placeholder="Name" v-model="form.name" :emit-on-blur="!showButton" />
     </div>
     <div class="form-group">
       <label>Gender</label>
@@ -11,15 +11,20 @@
         <option value="female">Female</option>
       </select>
     </div>
-    <div class="form-group">
+    <div v-if="showButton" class="form-group">
       <button :disabled="!formOk" type="submit">{{ buttonText }}</button>
     </div>
   </form>
 </template>
 
 <script>
+import InlineInput from './InlineInput';
+
 export default {
   name: 'ContactForm',
+  components: {
+    InlineInput
+  },
   props: {
     initialData: {
       type: Object,
@@ -28,6 +33,10 @@ export default {
     buttonText: {
       type: String,
       required: true
+    },
+    showButton: {
+      type: Boolean,
+      default: () => false
     }
   },
   data() {
@@ -36,16 +45,35 @@ export default {
       { name: '', gender: '' };
 
     return {
+      oldForm: { ...form },
       form
     };
   },
   computed: {
     formOk() {
-      return !!this.form.name && ['male', 'female'].indexOf(this.form.gender) !== -1;
+      return !!this.form.name && ['male', 'female'].includes(this.form.gender);
+    },
+    nameChanged() {
+      return !!this.form.name && this.oldForm.name.trim() !== this.form.name.trim();
+    },
+    genderChanged() {
+      return this.oldForm.gender.trim() !== this.form.gender.trim();
+    }
+  },
+  watch: {
+    form: {
+      deep: true,
+      handler(_) {
+        if (!this.showButton) this.submit();
+      }
     }
   },
   methods: {
     submit() {
+      if (!this.nameChanged && !this.genderChanged) return;
+
+      this.oldForm = { ...this.form }; 
+
       this.$emit('form-submitted', this.form);
     },
     resetForm({ name, gender }) {

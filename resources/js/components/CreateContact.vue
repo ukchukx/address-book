@@ -4,6 +4,7 @@
       <contact-form
         ref="form"
         button-text="Create contact"
+        show-button
         :initial-data="form"
         @form-submitted="submit" />
     </div>

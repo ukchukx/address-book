@@ -2,6 +2,6 @@
 
 @section('content')
 <div class="container-fluid">
-  <contacts :contacts="{{ $contacts }}" />
+  <contact :contact="{{ $contact }}" />
 </div>
 @endsection

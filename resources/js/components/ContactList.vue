@@ -1,34 +1,49 @@
 <template>
   <div class="card">
     <div class="card-body">
+      <div class="row">
+        <div class="col-md-3 col-sm-12">
+          <input v-model="searchText" type="text" class="form-control mb-3" placeholder="Search">
+        </div>
+      </div>
       <ul class="list-group">
-        <li class="list-group-item" v-for="contact in contacts" :key="contact.id">
-          <div class="row">
-            <div class="col-md-9">
-              <h5>{{ contact.name }}</h5>
-              <small>{{ contact.gender }}</small>
-            </div>
-            <div class="col-md-3 text-right">
-              <div class="btn-group">
-                <button class="btn btn-sm btn-outline-danger" @click="deleteContact(contact.id)">Delete</button>
-                <button class="btn btn-sm btn-outline-secondary" @click="selectContact(contact.id)">View</button>
-              </div>
-            </div>
-          </div>
-        </li>
+        <ContactListItem 
+          @delete-contact="deleteContact" 
+          v-for="contact in filteredContacts" 
+          :contact="contact"
+          :key="contact.id" />
       </ul>
-      <h4 v-if="!contacts.length" class="text-muted text-center">No contacts</h4>
+      <h4 v-if="!filteredContacts.length" class="text-muted text-center">No contacts</h4>
     </div>
   </div>
 </template>
 
 <script>
+import ContactListItem from './ContactListItem';
+
 export default {
   name: 'ContactList',
+  components: {
+    ContactListItem
+  },
   props: {
     contacts: {
       type: Array,
       required: true
+    }
+  },
+  data() {
+    return {
+      searchText: ''
+    };
+  },
+  computed: {
+    searchTextLowerCase() {
+      return this.searchText.toLowerCase();
+    },
+    filteredContacts() {
+      return this.contacts
+        .filter(({ name }) => !this.searchText.length || name.toLowerCase().includes(this.searchTextLowerCase));
     }
   },
   methods: {

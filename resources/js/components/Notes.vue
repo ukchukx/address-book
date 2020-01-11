@@ -46,7 +46,7 @@
               <div class="form-group row">
                 <label class="control-label col-sm-12">Text</label>
                 <div class="col-sm-12 editor-container">
-                  <vue-trix v-model="note.text" placeholder="Enter note" />
+                  
                 </div>
               </div>
             </form>
@@ -66,13 +66,9 @@
 </template>
 
 <script>
-import VueTrix from 'vue-trix';
 
 export default {
   name: 'Notes',
-  components: {
-    VueTrix
-  },
   props: {
     contactId: {
       type: String,

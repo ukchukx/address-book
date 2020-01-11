@@ -8,6 +8,7 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
-Vue.component('contact-view', require('./components/ContactView.vue').default);
+Vue.component('contacts', require('./components/Contacts.vue').default);
+Vue.component('contact', require('./components/Contact.vue').default);
 
 new Vue({ el: '#app' });
