@@ -2,29 +2,31 @@
   <div>
     <p><span class="h4">Notes</span> &emsp; <button @click="view()">New</button></p>
     <p v-if="loadingNotes"><i>Loading...</i></p>
-    <ul v-if="notes.length" class="list-group">
-      <li 
-        v-for="(note, i) in notes" 
-        :key="note.id" 
-        class="list-group-item d-flex justify-content-between align-items-center">
-        {{ note.title }}
-        <div class="btn-group btn-group-sm" role="group">
-          <button
-            type="button"
-            class="btn btn-outline-secondary"
-            @click.prevent.stop="view(i)">
-            Edit
-          </button>
-          <button
-            type="button"
-            class="btn btn-outline-danger"
-            @click.prevent.stop="deleteNote(i)">
-            Delete
-          </button>
-        </div>
-      </li>
-    </ul>
-    <h2 class="text-muted text-center" v-else>No notes</h2>
+    <div class="scroll-card">
+      <ul v-if="notes.length" class="list-group">
+        <li 
+          v-for="(note, i) in notes" 
+          :key="note.id" 
+          class="list-group-item d-flex justify-content-between align-items-center">
+          {{ note.title }}
+          <div class="btn-group btn-group-sm" role="group">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              @click.prevent.stop="view(i)">
+              Edit
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-danger"
+              @click.prevent.stop="deleteNote(i)">
+              Delete
+            </button>
+          </div>
+        </li>
+      </ul>
+      <h2 class="text-muted text-center" v-else>No notes</h2>
+    </div>
 
     <div ref="modal" class="modal" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
@@ -42,7 +44,7 @@
           <div class="modal-body">
             <form>
               <div class="form-group row">
-                <div class="col-sm-12 editor-container">
+                <div class="col-sm-12 scroll-card">
                   <quill-editor v-model="note.text" />
                 </div>
               </div>
@@ -221,9 +223,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-.editor-container {
-  max-height: 500px;
-  overflow-y: scroll;
-}
-</style>

@@ -6,14 +6,16 @@
           <input v-model="searchText" type="text" class="form-control mb-3" placeholder="Search">
         </div>
       </div>
-      <ul class="list-group">
-        <ContactListItem 
-          @delete-contact="deleteContact" 
-          v-for="contact in filteredContacts" 
-          :contact="contact"
-          :key="contact.id" />
-      </ul>
-      <h4 v-if="!filteredContacts.length" class="text-muted text-center">No contacts</h4>
+      <div class="scroll-card">
+        <ul class="list-group">
+          <ContactListItem 
+            @delete-contact="deleteContact" 
+            v-for="contact in filteredContacts" 
+            :contact="contact"
+            :key="contact.id" />
+        </ul>
+        <h4 v-if="!filteredContacts.length" class="text-muted text-center">No contacts</h4>
+      </div>
     </div>
   </div>
 </template>

@@ -2,17 +2,19 @@
   <div>
     <p><span class="h4">Addresses</span> &emsp; <button @click="view()">New</button></p>
     <p v-if="loadingAddresses"><i>Loading...</i></p>
-    <ul v-if="addresses.length" class="list-group">
-      <li v-for="(address, i) in addresses" :key="address.id" class="list-group-item d-flex justify-content-between align-items-center">
-        <span class="badge badge-secondary">{{ address.key | keyLabel }}</span>
-        {{ address.value }}
-        <div class="btn-group btn-group-sm" role="group">
-          <button type="button" class="btn btn-outline-secondary" @click.prevent.stop="view(i)">Edit</button>
-          <button type="button" class="btn btn-outline-danger" @click.prevent.stop="deleteAddress(i)">Delete</button>
-        </div>
-      </li>
-    </ul>
-    <h2 class="text-muted text-center" v-else>No addresses</h2>
+    <div class="scroll-card">
+      <ul v-if="addresses.length" class="list-group">
+        <li v-for="(address, i) in addresses" :key="address.id" class="list-group-item d-flex justify-content-between align-items-center">
+          <span class="badge badge-secondary">{{ address.key | keyLabel }}</span>
+          {{ address.value }}
+          <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-secondary" @click.prevent.stop="view(i)">Edit</button>
+            <button type="button" class="btn btn-outline-danger" @click.prevent.stop="deleteAddress(i)">Delete</button>
+          </div>
+        </li>
+      </ul>
+      <h2 class="text-muted text-center" v-else>No addresses</h2>
+    </div>
 
     <div ref="modal" class="modal" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-lg" role="document">

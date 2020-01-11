@@ -6,3 +6,8 @@
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+
+.scroll-card {
+  max-height: 90vh;
+  overflow-y: scroll;
+}
