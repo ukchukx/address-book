@@ -30,7 +30,11 @@
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Write note</h5>
+              <inline-input 
+                label-classes="modal-title h3"
+                input-classes="form-control"
+                :placeholder="titlePlaceholder" 
+                v-model="note.title" />
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -38,19 +42,8 @@
           <div class="modal-body">
             <form>
               <div class="form-group row">
-                <label class="control-label col-sm-12">Title</label>
-                <div class="col-sm-12">
-                  <inline-input 
-                    label-classes="h3"
-                    input-classes="form-control"
-                    placeholder="Title..." 
-                    v-model="note.title" />
-                </div>
-              </div>
-              <div class="form-group row">
-                <label class="control-label col-sm-12">Text</label>
                 <div class="col-sm-12 editor-container">
-                   <quill-editor v-model="note.text" ref="editor" />
+                  <quill-editor v-model="note.text" />
                 </div>
               </div>
             </form>
@@ -93,7 +86,8 @@ export default {
       notes: [],
       loadingNotes: false,
       busy: false,
-      currIndex: 0,
+      currIndex: -1,
+      lastSavedNote: '',
       note: {
         id: '',
         contact_id: this.contactId,
@@ -103,6 +97,9 @@ export default {
     };
   },
   computed: {
+    titlePlaceholder() {
+      return this.note.title ? this.note.title : 'Add title...';
+    },
     titleOk() {
       const { note: { id, title }, notes } = this;
 
@@ -111,8 +108,11 @@ export default {
     textOk() {
       return !!this.note.text;
     },
+    noteChanged() {
+      return this.lastSavedNote !== this.note.text.trim();
+    },
     formOk() {
-      return this.titleOk && this.textOk;
+      return this.titleOk && this.textOk && this.noteChanged;
     },
     disableSaveButton() {
       return !this.formOk || this.busy;
@@ -127,8 +127,23 @@ export default {
       }
     }
   },
+  mounted() {
+    this.scheduleNoteCheck();
+  },
   methods: {
+    scheduleNoteCheck() {
+      setTimeout(this.checkNote, 5000);
+    },
+    checkNote() {
+      if (this.note.id && this.lastSavedNote !== this.note.text.trim()) {
+        this.save();
+      }
+
+      this.scheduleNoteCheck();
+    },
     fetchNotes() {
+      if (this.loadingNotes) return;
+
       this.notes = [];
       this.loadingNotes = true;
 
@@ -153,7 +168,7 @@ export default {
         });
     },
     save() {
-      if (this.busy) return;
+      if (this.busy || !this.formOk) return;
 
       this.note.title = this.note.title.trim();
       this.note.text = this.note.text.trim();
@@ -163,11 +178,8 @@ export default {
         axios.put(`/api/notes/${this.note.id}`, this.note)
           .then(({ data: { data } }) => {
             this.busy = false;
-            $(this.$refs.modal).modal('hide');
-
             this.notes[this.currIndex] = data;
-
-            this.resetNote();
+            this.lastSavedNote = this.note.text;
           })
           .catch(() => {
             this.busy = false;
@@ -177,9 +189,9 @@ export default {
         axios.post('/api/notes', this.note)
           .then(({ data: { data } }) => {
             this.busy = false;
-            this.notes.push(data);
+            this.lastSavedNote = this.note.text;
 
-            $(this.$refs.modal).modal('hide');
+            this.notes.push(data);
           })
           .catch(() => {
             this.busy = false;
@@ -192,6 +204,7 @@ export default {
       
       if (note) {
         this.note = { ...note };
+        this.lastSavedNote = this.note.text;
       } else {
         this.resetNote();
       }
@@ -202,7 +215,7 @@ export default {
       this.note.id = '';
       this.note.text = '';
       this.note.title = '';
-
+      this.lastSavedNote = '';
       this.currIndex = -1;
     }
   }
