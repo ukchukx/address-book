@@ -1,7 +1,7 @@
 <template>
   <input 
-    :class="inputClasses"
     v-if="editing && (isText || isNumber)" 
+    :class="inputClasses"
     :type="type" 
     :value="value" 
     :placeholder="placeholder"
@@ -9,10 +9,22 @@
     v-on:keyup.enter="handleEnter"
     @input="handleInput"
     @blur="handleBlur">
+
+  <textarea 
+    v-else-if="editing && isTextArea"
+    :class="inputClasses"
+    :rows="rows"
+    :cols="cols"
+    ref="inputEl"
+    :value="value"
+    :placeholder="placeholder"
+    @input="handleInput"
+    @blur="handleBlur">
+  </textarea>
   
   <select 
-    :class="inputClasses"
     v-else-if="editing && isSelect"
+    :class="inputClasses"
     ref="inputEl" 
     :value="value"
     @change="handleChange"
@@ -62,6 +74,14 @@ export default {
     inputClasses: {
       type: String,
       default: () => ''
+    },
+    rows: {
+      type: Number,
+      default: () => 2
+    },
+    cols: {
+      type: Number,
+      default: () => 20
     }
   },
   data() {
@@ -79,6 +99,9 @@ export default {
     isSelect() {
       return this.type === 'select';
     },
+    isTextArea() {
+      return this.type === 'textarea';
+    },
     inputType() {
       return this.isNumber ? 'number' : 'text';
     },
@@ -87,7 +110,7 @@ export default {
     },
     label() {
       if (this.isNumber) return this.value === '' ? this.placeholder : this.value;
-      if (this.isText) return this.value ? this.value : this.placeholder;
+      if (this.isText || this.isTextArea) return this.value ? this.value : this.placeholder;
       // Select
       return this.options.reduce((x, { label, value }) => this.value === value ? label : x, this.value);
     }

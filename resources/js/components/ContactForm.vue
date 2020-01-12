@@ -2,7 +2,12 @@
   <form @submit.stop.prevent="submit()">
     <div class="form-group">
       <label>Name</label><br>
-      <inline-input label-classes="h3" input-classes="form-control" placeholder="Name..." v-model="form.name" :emit-on-blur="!showButton" />
+      <inline-input 
+        label-classes="h3" 
+        input-classes="form-control" 
+        placeholder="Name..." 
+        v-model="form.name" 
+        :emit-on-blur="!showButton" />
     </div>
     <div class="form-group">
       <label>Gender</label><br>
