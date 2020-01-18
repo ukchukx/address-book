@@ -2,16 +2,16 @@
   <form @submit.stop.prevent="submit()">
     <div class="form-group">
       <label>Name</label><br>
-      <inline-input 
+      <InlineInput
         label-classes="h3" 
         input-classes="form-control" 
         placeholder="Name..." 
-        v-model="form.name" 
-        :emit-on-blur="!showButton" />
+        @blur="inputBlurred"
+        v-model="form.name" />
     </div>
     <div class="form-group">
       <label>Gender</label><br>
-      <inline-input
+      <InlineInput
         label-classes="h3"
         input-classes="form-control"
         placeholder="Select gender"
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import InlineInput from './InlineInput';
+import InlineInput from 'vue-inline-input';
 
 export default {
   name: 'ContactForm',
@@ -73,11 +73,8 @@ export default {
     }
   },
   watch: {
-    form: {
-      deep: true,
-      handler(_) {
-        if (!this.showButton) this.submit();
-      }
+    'form.gender'(_) {
+      if (!this.showButton) this.submit();
     }
   },
   methods: {
@@ -91,6 +88,9 @@ export default {
     resetForm({ name, gender }) {
       this.form.name = name;
       this.form.gender = gender;
+    },
+    inputBlurred() {
+      if (!this.showButton) this.submit();
     }
   }
 }

@@ -32,7 +32,7 @@
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
-              <inline-input 
+              <InlineInput 
                 label-classes="modal-title h3"
                 input-classes="form-control"
                 :placeholder="titlePlaceholder" 
@@ -69,7 +69,7 @@ import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
 import 'quill/dist/quill.bubble.css';
 import { quillEditor } from 'vue-quill-editor';
-import InlineInput from './InlineInput';
+import InlineInput from 'vue-inline-input';
 
 export default {
   name: 'Notes',

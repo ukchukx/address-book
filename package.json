@@ -21,6 +21,7 @@
         "bootstrap": "^4.3.1",
         "jquery": "^3.4.1",
         "popper.js": "^1.15.0",
+        "vue-inline-input": "^1.1.0",
         "vue-quill-editor": "^3.0.6"
     }
 }

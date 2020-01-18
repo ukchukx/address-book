@@ -30,7 +30,7 @@
               <div class="form-group row">
                 <label class="control-label col-sm-12">Type</label><br>
                 <div class="col-sm-12">
-                  <inline-input
+                  <InlineInput
                     label-classes="h3"
                     input-classes="form-control"
                     type="select"
@@ -41,7 +41,7 @@
               <div class="form-group row">
                 <label class="control-label col-sm-12">Value</label><br>
                 <div class="col-sm-12">
-                  <inline-input 
+                  <InlineInput 
                     label-classes="h3"
                     input-classes="form-control"
                     :placeholder="placeholder" 
@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import InlineInput from './InlineInput';
+import InlineInput from 'vue-inline-input';
 
 export default {
   name: 'Addresses',
