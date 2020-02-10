@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Domain\Contact\Commands\CreateContact;
 use App\Domain\Contact\Commands\DeleteContact;
 use App\Domain\Contact\Commands\UpdateContact;
@@ -11,8 +10,6 @@ use App\Models\User;
 use App\Models\Contact;
 
 class ContactTest extends TestCase {
-  use RefreshDatabase;
-
   public function testContactCreation() {
     $user = User::create($this->getUserAttributes());
     $data = $this->getContactAttributes($user);

@@ -19,6 +19,7 @@ class CreateContactsTable extends Migration
       $table->string('name');
       $table->string('gender');
       $table->timestamps();
+      $table->engine = 'memory';
     });
   }
 

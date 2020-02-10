@@ -17,8 +17,9 @@ class CreateNotesTable extends Migration
       $table->uuid('id')->primary();
       $table->uuid('contact_id');
       $table->string('title');
-      $table->string('text');
+      $table->string('text', 5000);
       $table->timestamps();
+      $table->engine = 'memory';
     });
   }
 

@@ -3,58 +3,64 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Faker\Factory as Faker;
 use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Contact;
-use Illuminate\Support\Facades\Redis;
 
 abstract class TestCase extends BaseTestCase {
-    use CreatesApplication;
-
+    use CreatesApplication, RefreshDatabase;
+    
     private $faker;
 
-    protected function tearDown(): void {
-      Redis::flushdb();
+    private function getFaker() {
+      if (empty($this->faker)) $this->faker = Faker::create();
+      
+      return $this->faker;
+    }
+
+    protected function setUp(): void {
+      parent::setUp();
     }
 
     protected function getUserAttributes() {
-      if (empty($this->faker)) $this->faker = Faker::create();
+      $faker = $this->getFaker();
 
       return [
         'id' => Str::uuid(),
-        'email' => $this->faker->safeEmail,
-        'name' => $this->faker->name,
-        'password' => $this->faker->password
+        'email' => $faker->safeEmail,
+        'name' => $faker->name,
+        'password' => $faker->password
       ];
     }
 
     protected function getContactAttributes(User $user) {
-      if (empty($this->faker)) $this->faker = Faker::create();
+      $faker = $this->getFaker();
 
       return [
         'user_id' => $user->id,
-        'name' => $this->faker->name,
+        'name' => $faker->name,
         'gender' => rand() % 2 == 0 ? 'male' : 'female'
       ];
     }
 
     protected function getNoteAttributes(Contact $contact) {
-      if (empty($this->faker)) $this->faker = Faker::create();
+      $faker = $this->getFaker();
 
       return [
         'contact_id' => $contact->id,
-        'title' => $this->faker->sentence,
-        'text' => $this->faker->text
+        'title' => $faker->sentence,
+        'text' => $faker->text
       ];
     }
 
     protected function getAddressAttributes(Contact $contact, $key) {
-      if (empty($this->faker)) $this->faker = Faker::create();
+      $faker = $this->getFaker();
 
-      if ($key == 'email') $value = $this->faker->safeEmail;
-      if ($key == 'phone') $value = $this->faker->e164PhoneNumber;
-      if ($key == 'physical') $value = $this->faker->sentence;
+      if ($key == 'email') $value = $faker->safeEmail;
+      if ($key == 'phone') $value = $faker->e164PhoneNumber;
+      if ($key == 'physical') $value = $faker->sentence;
 
       return [
         'contact_id' => $contact->id,

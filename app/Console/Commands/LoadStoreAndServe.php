@@ -14,7 +14,7 @@ class LoadStoreAndServe extends Command {
    *
    * @var string
    */
-  protected $signature = 'address-book:serve';
+  protected $signature = 'app:serve';
 
   /**
    * The console command description.

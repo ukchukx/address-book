@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Domain\Note\Commands\CreateNote;
 use App\Domain\Note\Commands\UpdateNote;
 use App\Domain\Note\Commands\DeleteNote;
@@ -13,8 +12,6 @@ use App\Models\Contact;
 use App\Models\Note;
 
 class NoteTest extends TestCase {
-  use RefreshDatabase;
-
   public function testNoteCreation() {
     $user = User::create($this->getUserAttributes());
     $contact = CreateContact::from($this->getContactAttributes($user))->execute();

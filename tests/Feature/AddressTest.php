@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Domain\Address\Commands\CreateAddress;
 use App\Domain\Address\Commands\UpdateAddress;
 use App\Domain\Address\Commands\DeleteAddress;
@@ -13,8 +12,6 @@ use App\Models\Contact;
 use App\Models\Address;
 
 class AddressTest extends TestCase {
-  use RefreshDatabase;
-
   public function testEmailAddressCreation() {
     $user = User::create($this->getUserAttributes());
     $contact = CreateContact::from($this->getContactAttributes($user))->execute();

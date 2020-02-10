@@ -14,7 +14,7 @@ class Init extends Command {
   *
   * @var string
   */
-  protected $signature = 'address-book:init';
+  protected $signature = 'app:init';
 
   /**
   * The console command description.
@@ -30,11 +30,24 @@ class Init extends Command {
   */
   public function handle() {
     $this->line('<info>Generate OAuth keys...</info>');
+
     $this->call('passport:install');
 
     $this->line('<info>Run migrations...</info>');
-    $this->call('migrate', ['--force' => true]);
 
-    $this->call('address-book:serve');
+    $this->call('migrate', ['--force' => true]);
+    $this->call('migrate:refresh', [
+      '--force' => true, 
+      '--path' => '/database/migrations/2019_07_29_071318_create_contacts_table.php'
+    ]);
+    $this->call('migrate:refresh', [
+      '--force' => true, 
+      '--path' => '/database/migrations/2019_07_29_071327_create_notes_table.php'
+    ]);
+    $this->call('migrate:refresh', [
+      '--force' => true, 
+      '--path' => '/database/migrations/2019_07_29_071336_create_addresses_table.php'
+    ]);
+    $this->call('app:serve');
   }
 }
