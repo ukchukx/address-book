@@ -10,6 +10,7 @@ use App\Models\Contact;
 use App\Domain\Contact\Commands\CreateContact;
 use App\Domain\Contact\Commands\DeleteContact;
 use App\Domain\Contact\Commands\UpdateContact;
+use App\Domain\Note\Commands\CreateNote;
 
 class ContactController extends Controller {
   public function store(Request $request) {
@@ -31,7 +32,24 @@ class ContactController extends Controller {
     $contact = $command->execute();
 
     if ($contact) {
-      Log::info('Contact created', array_merge($logParams, ['contact' => $contact->id]));
+      $logParams = array_merge($logParams, ['contact' => $contact->id]);
+
+      Log::info('Contact created', $logParams);
+
+      $noteParams = [
+        'contact_id' => $contact->id, 
+        'title' => 'General notes', 
+        'text' => 'New text...'
+      ];
+      $command = CreateNote::from($noteParams);
+      $note = $command->execute();
+      $logParams = array_merge($logParams, ['note_params' => $noteParams]);
+
+      if ($note) {
+        Log::info('Default note created for new contact', array_merge($logParams, ['note' => $note->id]));
+      } else {
+        Log::info('Could not create default note for new contact', $logParams);
+      }
 
       return response([
         'success' => true,
