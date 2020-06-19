@@ -19,7 +19,7 @@ class NoteController extends Controller {
     Log::info('Fetch contact notes', ['user' => $user->email, 'contact' => $id]);
 
     if (! $contact) {
-      Log::info('Cannot find contact', ['user' => $user->email, 'contact' => $id]);
+      Log::warn('Cannot find contact', ['user' => $user->email, 'contact' => $id]);
 
       return response(null, Response::HTTP_FORBIDDEN);
     }
@@ -37,7 +37,7 @@ class NoteController extends Controller {
     $logParams = ['params' => $requestData, 'user' => $user->email];
 
     if (! $command->isValid()) {
-      Log::info('Create note command is invalid', $logParams);
+      Log::warn('Create note command is invalid', $logParams);
 
       return response([
         'success' => false,
@@ -56,7 +56,7 @@ class NoteController extends Controller {
         'data' => $note
       ], Response::HTTP_CREATED);
     } else {
-      Log::info('Could not create note', $logParams);
+      Log::error('Could not create note', $logParams);
     }
 
     return response(['success' => false, 'message' => 'Internal Server Error'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -80,7 +80,7 @@ class NoteController extends Controller {
       ], ((bool) $note) ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST);
     }
 
-    Log::info('Cannot update note', $logParams);
+    Log::error('Cannot update note', $logParams);
 
     return response(null, Response::HTTP_FORBIDDEN);
   }
@@ -91,7 +91,7 @@ class NoteController extends Controller {
     $logParams = ['user' => $user->email, 'note' => $id];
 
     if (! $note) {
-      Log::info('Note not found', $logParams);
+      Log::warn('Note not found', $logParams);
 
       return response(null, Response::HTTP_NOT_FOUND);
     }
@@ -104,7 +104,7 @@ class NoteController extends Controller {
       return response(null, Response::HTTP_NO_CONTENT);
     }
 
-    Log::info('Cannot delete note', $logParams);
+    Log::error('Cannot delete note', $logParams);
 
     return response(null, Response::HTTP_FORBIDDEN);
   }

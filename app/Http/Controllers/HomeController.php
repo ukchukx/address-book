@@ -25,6 +25,7 @@ class HomeController extends Controller {
     $contact = $user->findContact($id);
 
     if (! $contact) {
+      Log::error("Could not find contact '$id' for user '$user->email'");
       abort(404);
     };
 

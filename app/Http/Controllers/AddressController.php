@@ -20,7 +20,7 @@ class AddressController extends Controller {
     Log::info('Fetch contact addresses', $logParams);
 
     if (! $contact) {
-      Log::info('Cannot find contact', $logParams);
+      Log::warn('Cannot find contact', $logParams);
 
       return response(null, Response::HTTP_FORBIDDEN);
     }
@@ -38,7 +38,7 @@ class AddressController extends Controller {
     $logParams = ['user' => $user->email, 'params' => $requestData];
 
     if (! $command->isValid()) {
-      Log::info('Create address command is invalid', $logParams);
+      Log::warn('Create address command is invalid', $logParams);
 
       return response([
         'success' => false,
@@ -57,7 +57,7 @@ class AddressController extends Controller {
         'data' => $address
       ], Response::HTTP_CREATED);
     } else {
-      Log::info('Could not create address', $logParams);
+      Log::error('Could not create address', $logParams);
     }
 
     return response(['success' => false, 'message' => 'Internal Server Error'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -81,7 +81,7 @@ class AddressController extends Controller {
       ], ((bool) $address) ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST);
     }
 
-    Log::info('Cannot update address', $logParams);
+    Log::error('Cannot update address', $logParams);
 
     return response(null, Response::HTTP_FORBIDDEN);
   }
@@ -92,7 +92,7 @@ class AddressController extends Controller {
     $logParams = ['user' => $user->email, 'address' => $id];
 
     if (! $address) {
-      Log::info('Address not found', $logParams);
+      Log::warn('Address not found', $logParams);
 
       return response(null, Response::HTTP_NOT_FOUND);
     }
@@ -105,7 +105,7 @@ class AddressController extends Controller {
       return response(null, Response::HTTP_NO_CONTENT);
     }
 
-    Log::info('Cannot delete address', $logParams);
+    Log::error('Cannot delete address', $logParams);
 
     return response(null, Response::HTTP_FORBIDDEN);
   }

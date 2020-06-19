@@ -21,7 +21,7 @@ class ContactController extends Controller {
     $logParams = ['user' => $user->email, 'params' => $data];
 
     if (! $command->isValid()) {
-      Log::info('Command to create contact is invalid', $logParams);
+      Log::warn('Command to create contact is invalid', $logParams);
 
       return response([
         'success' => false,
@@ -48,7 +48,7 @@ class ContactController extends Controller {
       if ($note) {
         Log::info('Default note created for new contact', array_merge($logParams, ['note' => $note->id]));
       } else {
-        Log::info('Could not create default note for new contact', $logParams);
+        Log::error('Could not create default note for new contact', $logParams);
       }
 
       return response([
@@ -57,7 +57,7 @@ class ContactController extends Controller {
         'data' => $contact
       ], Response::HTTP_CREATED);
     } else {
-      Log::info('Could not create contact', $logParams);
+      Log::error('Could not create contact', $logParams);
     }
 
     return response(['success' => false, 'message' => 'Internal Server Error'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -81,7 +81,7 @@ class ContactController extends Controller {
       ], ((bool) $contact) ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST);
     }
 
-    Log::info('Cannot update contact', $logParams);
+    Log::error('Cannot update contact', $logParams);
 
     return response(null, Response::HTTP_FORBIDDEN);
   }
@@ -92,7 +92,7 @@ class ContactController extends Controller {
     $logParams = ['user' => $user->email, 'contact' => $id];
 
     if (! $contact) {
-      Log::info('Contact not found', $logParams);
+      Log::warn('Contact not found', $logParams);
 
       return response(null, Response::HTTP_NOT_FOUND);
     }
@@ -105,7 +105,7 @@ class ContactController extends Controller {
       return response(null, Response::HTTP_NO_CONTENT);
     }
 
-    Log::info('Cannot delete contact', $logParams);
+    Log::error('Cannot delete contact', $logParams);
 
     return response(null, Response::HTTP_FORBIDDEN);
   }
