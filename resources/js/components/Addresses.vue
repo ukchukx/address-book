@@ -1,6 +1,10 @@
 <template>
   <div>
-    <p><span class="h4">Addresses</span> &emsp; <button @click="view()">New</button></p>
+    <p>
+      <span class="h4">Addresses</span> 
+      &emsp; 
+      <button class="btn btn-sm btn-outline-secondary" @click="view()">New</button>
+    </p>
     <p v-if="loadingAddresses"><i>Loading...</i></p>
     <div class="scroll-card">
       <ul v-if="addresses.length" class="list-group">
@@ -55,7 +59,7 @@
               :disabled="!formOk"
               @click.stop.prevent="save()"
               type="button"
-              class="btn btn-secondary"
+              class="btn btn-outline-secondary"
             >Save</button>
           </div>
         </div>
@@ -98,7 +102,7 @@ export default {
   },
   computed: {
     modalTitle() {
-      return !!this.address.id ? 'Update contact detail' : 'Add contact detail';
+      return !!this.address.id ? 'Update contact detail' : 'New contact detail';
     },
     placeholder() {
       if (this.address.key === 'phone') return 'Enter phone number';

@@ -17,7 +17,7 @@
         v-model="form.gender" />
     </div>
     <div v-if="showButton" class="form-group">
-      <button :disabled="!formOk" type="submit">{{ buttonText }}</button>
+      <button class="btn btn-outline-secondary" :disabled="!formOk" type="submit">{{ buttonText }}</button>
     </div>
   </form>
 </template>
