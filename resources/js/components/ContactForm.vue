@@ -1,20 +1,17 @@
 <template>
   <form @submit.stop.prevent="submit()">
     <div class="form-group">
-      <label>Name</label><br>
-      <InlineInput
-        label-classes="h3" 
-        input-classes="form-control" 
-        placeholder="Name..." 
-        @blur="inputBlurred"
-        v-model="form.name" />
+      <label>Name</label>
+      <br>
+      <InlineInput label-classes="h3" input-classes="form-control" placeholder="Name..." v-model="form.name" />
     </div>
     <div class="form-group">
-      <label>Gender</label><br>
+      <label>Gender</label>
+      <br>
       <InlineInput
         label-classes="h3"
         input-classes="form-control"
-        placeholder="Select gender"
+        placeholder="Gender..."
         type="select"
         :options="genderOptions"
         v-model="form.gender" />
@@ -48,11 +45,11 @@ export default {
     }
   },
   data() {
-    const form = this.initialData ?
-      { name: this.initialData.name, gender: this.initialData.gender } :
-      { name: '', gender: '' };
+    const { name = '', gender = '' } = this.initialData, 
+      form = { name, gender };
 
     return {
+      nameTimeout: 0,
       genderOptions: [
         { label: 'Male', value: 'male' },
         { label: 'Female', value: 'female' }
@@ -63,34 +60,42 @@ export default {
   },
   computed: {
     formOk() {
-      return !!this.form.name && ['male', 'female'].includes(this.form.gender);
+      return this.nameOk && this.genderOk;
     },
-    nameChanged() {
-      return !!this.form.name && this.oldForm.name.trim() !== this.form.name.trim();
+    genderOk() {
+      return ['male', 'female'].includes(this.form.gender);
+    },
+    nameOk() {
+      return !!this.form.name;
     },
     genderChanged() {
       return this.oldForm.gender.trim() !== this.form.gender.trim();
+    },
+    nameChanged() {
+      return this.oldForm.name.trim() !== this.form.name.trim();
     }
   },
   watch: {
     'form.gender'(_) {
-      if (!this.showButton) this.submit();
+      this.submit();
+    },
+    'form.name'(_) {
+      if (this.nameTimeout) clearTimeout(this.nameTimeout);
+
+      this.nameTimeout = setTimeout(() => this.submit(), 500);
     }
   },
   methods: {
     submit() {
       if (!this.nameChanged && !this.genderChanged) return;
 
-      this.oldForm = { ...this.form }; 
+      this.oldForm = { ...this.form };
 
-      this.$emit('form-submitted', this.form);
+      this.$emit('form-submitted', this.oldForm);
     },
     resetForm({ name, gender }) {
       this.form.name = name;
       this.form.gender = gender;
-    },
-    inputBlurred() {
-      if (!this.showButton) this.submit();
     }
   }
 }
