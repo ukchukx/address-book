@@ -88,17 +88,9 @@ export default {
       }
     }
   },
-  mounted() {
-    this.scheduleNoteCheck();
-  },
   methods: {
-    scheduleNoteCheck() {
-      setTimeout(this.checkNote, 5000);
-    },
-    checkNote() {
-      if (this.note.id && this.lastSavedNote !== this.note.text.trim()) this.save();
-
-      this.scheduleNoteCheck();
+    recordCurrentNote() {
+      this.lastSavedNote = this.note.text;
     },
     fetchNotes() {
       this.notes = [];
@@ -112,6 +104,7 @@ export default {
           if (this.notes.length) {
             this.currNote = 0;
             this.note = this.notes[this.currNote];
+            this.recordCurrentNote();
           }          
         })
         .catch(() => {
@@ -119,8 +112,6 @@ export default {
         });
     },
     save() {
-      if (this.busy || !this.formOk) return;
-
       this.note.title = this.note.title.trim();
       this.note.text = this.note.text.trim();
       this.busy = true;
@@ -130,23 +121,23 @@ export default {
           .then(({ data: { data } }) => {
             this.busy = false;
             this.notes[this.currNote] = data;
-            this.lastSavedNote = this.note.text;
+            this.recordCurrentNote();
           })
           .catch(() => {
             this.busy = false;
-            alert('Could not update');
+            alert('Could not update note');
           });
       } else {
         axios.post('/api/notes', this.note)
           .then(({ data: { data } }) => {
             this.busy = false;
-            this.lastSavedNote = this.note.text;
+            this.recordCurrentNote();
 
             this.notes.push(data);
           })
           .catch(() => {
             this.busy = false;
-            alert('Could not create');
+            alert('Could not create note');
           });
       }
     }
