@@ -77,9 +77,11 @@ export default {
   },
   watch: {
     'form.gender'(_) {
-      this.submit();
+      if (!this.showButton) this.submit();
     },
     'form.name'(_) {
+      if (this.showButton) return;
+      
       if (this.nameTimeout) clearTimeout(this.nameTimeout);
 
       this.nameTimeout = setTimeout(() => this.submit(), 500);
@@ -87,7 +89,7 @@ export default {
   },
   methods: {
     submit() {
-      if (!this.nameChanged && !this.genderChanged) return;
+      if (!this.nameChanged && !this.genderChanged && this.showButton) return;
 
       this.oldForm = { ...this.form };
 
