@@ -20,7 +20,7 @@ class AddressController extends Controller {
     Log::info('Fetch contact addresses', $logParams);
 
     if (! $contact) {
-      Log::warn('Cannot find contact', $logParams);
+      Log::warning('Cannot find contact', $logParams);
 
       return response(null, Response::HTTP_FORBIDDEN);
     }
@@ -38,7 +38,7 @@ class AddressController extends Controller {
     $logParams = ['user' => $user->email, 'params' => $requestData];
 
     if (! $command->isValid()) {
-      Log::warn('Create address command is invalid', $logParams);
+      Log::warning('Create address command is invalid', $logParams);
 
       return response([
         'success' => false,
@@ -92,7 +92,7 @@ class AddressController extends Controller {
     $logParams = ['user' => $user->email, 'address' => $id];
 
     if (! $address) {
-      Log::warn('Address not found', $logParams);
+      Log::warning('Address not found', $logParams);
 
       return response(null, Response::HTTP_NOT_FOUND);
     }

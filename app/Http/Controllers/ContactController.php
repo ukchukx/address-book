@@ -21,7 +21,7 @@ class ContactController extends Controller {
     $logParams = ['user' => $user->email, 'params' => $data];
 
     if (! $command->isValid()) {
-      Log::warn('Command to create contact is invalid', $logParams);
+      Log::warning('Command to create contact is invalid', $logParams);
 
       return response([
         'success' => false,
@@ -92,7 +92,7 @@ class ContactController extends Controller {
     $logParams = ['user' => $user->email, 'contact' => $id];
 
     if (! $contact) {
-      Log::warn('Contact not found', $logParams);
+      Log::warning('Contact not found', $logParams);
 
       return response(null, Response::HTTP_NOT_FOUND);
     }

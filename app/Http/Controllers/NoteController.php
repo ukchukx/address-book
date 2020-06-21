@@ -19,7 +19,7 @@ class NoteController extends Controller {
     Log::info('Fetch contact notes', ['user' => $user->email, 'contact' => $id]);
 
     if (! $contact) {
-      Log::warn('Cannot find contact', ['user' => $user->email, 'contact' => $id]);
+      Log::warning('Cannot find contact', ['user' => $user->email, 'contact' => $id]);
 
       return response(null, Response::HTTP_FORBIDDEN);
     }
@@ -37,7 +37,7 @@ class NoteController extends Controller {
     $logParams = ['params' => $requestData, 'user' => $user->email];
 
     if (! $command->isValid()) {
-      Log::warn('Create note command is invalid', $logParams);
+      Log::warning('Create note command is invalid', $logParams);
 
       return response([
         'success' => false,
@@ -91,7 +91,7 @@ class NoteController extends Controller {
     $logParams = ['user' => $user->email, 'note' => $id];
 
     if (! $note) {
-      Log::warn('Note not found', $logParams);
+      Log::warning('Note not found', $logParams);
 
       return response(null, Response::HTTP_NOT_FOUND);
     }
