@@ -76,8 +76,7 @@ blocks:
             - docker save -o image.tar.gz address-book
             - cache store image-$SEMAPHORE_WORKFLOW_ID image.tar.gz
             - cache store dockercompose-$SEMAPHORE_WORKFLOW_ID docker-compose.yml
-            - cache store run-$SEMAPHORE_WORKFLOW_ID run.sh
-            - cache store stop-$SEMAPHORE_WORKFLOW_ID stop.sh
+            - cache store fluent-bit-$SEMAPHORE_WORKFLOW_ID fluent-bit.conf
 
 promotions:
   - name: Deploy to production
