@@ -1,10 +1,22 @@
 version: '3'
 services:
+  fluentbit:
+    image: fluent/fluent-bit:1.4
+    container_name: fluent-bit
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    env_file:
+      - .env
+    volumes:
+      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
   address-book:
     build: .
     image: address-book
     container_name: address-book
     restart: unless-stopped
     network_mode: host
-    volumes:
-      - "${PWD}/logs:/app/storage/logs"
+    depends_on:
+      - fluentbit
+    logging:
+      driver: fluentd
